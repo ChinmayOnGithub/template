@@ -24,8 +24,7 @@ const IGNORED_DIRS = new Set([
   "build",
   "coverage",
   ".turbo",
-  ".cache",
-  "context"
+  ".cache"
 ]);
 
 const TEXT_EXTENSIONS = new Set([
