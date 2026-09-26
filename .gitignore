@@ -234,3 +234,8 @@ dump.rdb
 # ------------------------------------------------------------------------------
 *.cid
 docker-compose.override.yml
+
+# AI context index and task output
+.agents/context/index.json
+.agents/context/items.json
+.agents/context/last-context.json
