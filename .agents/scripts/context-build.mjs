@@ -44,6 +44,14 @@ function changedFiles() {
       .split(/\r?\n/)
       .map((value) => value.trim())
       .filter(Boolean);
+    const recent = execFileSync("git", ["diff", "--name-only", "HEAD~5..HEAD"], {
+      cwd: ROOT,
+      encoding: "utf8"
+    })
+      .split(/\r?\n/)
+      .map((value) => value.trim())
+      .filter(Boolean);
+    return [...new Set([...current, ...recent])];
   } catch {
     return [];
   }
@@ -74,7 +82,9 @@ function score(item, queryTokens, changed) {
     item.source,
     item.summary,
     ...(item.keywords ?? []),
-    ...(item.symbols ?? [])
+    ...(item.symbols ?? []),
+    ...(item.relations?.dependsOn ?? []),
+    ...(item.relations?.relatedTo ?? [])
   ].join(" ").toLowerCase();
 
   for (const term of queryTokens) {
