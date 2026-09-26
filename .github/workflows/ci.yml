@@ -33,7 +33,16 @@ jobs:
         run: bun run check-headers
 
       - name: Check code formatting
-        run: bun run format:check
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            git fetch origin "$GITHUB_BASE_REF" --depth=1
+            git diff --name-only -z "origin/$GITHUB_BASE_REF...HEAD" |
+              xargs -0 -r bunx prettier --check
+          else
+            git diff-tree --no-commit-id --name-only -z -r "$GITHUB_SHA" |
+              xargs -0 -r bunx prettier --check
+          fi
 
       - name: Run linter
         run: bun run lint
