@@ -22,4 +22,4 @@ jobs:
           bun-version: latest
 
       - name: Audit dependencies for known vulnerabilities
-        run: bun pm scan
+        run: bun audit
