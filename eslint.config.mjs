@@ -4,13 +4,19 @@
  * Enforces strict typing, dead-code detection, and prevents console logging clutter.
  */
 
-import { defineConfig, globalIgnores } from "eslint/config";
-import nextVitals from "eslint-config-next/core-web-vitals";
-import nextTs from "eslint-config-next/typescript";
+import { FlatCompat } from "@eslint/eslintrc";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-const eslintConfig = defineConfig([
-  ...nextVitals,
-  ...nextTs,
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+});
+
+const eslintConfig = [
+  ...compat.extends("next/core-web-vitals", "next/typescript"),
   {
     rules: {
       "no-unused-vars": "off",
@@ -37,14 +43,16 @@ const eslintConfig = defineConfig([
       "no-console": "off",
     },
   },
-  globalIgnores([
-    ".next/**",
-    "out/**",
-    "build/**",
-    "dist/**",
-    "coverage/**",
-    "next-env.d.ts",
-  ]),
-]);
+  {
+    ignores: [
+      ".next/**",
+      "out/**",
+      "build/**",
+      "dist/**",
+      "coverage/**",
+      "next-env.d.ts",
+    ],
+  },
+];
 
 export default eslintConfig;

@@ -38,10 +38,10 @@
       "computedHash": "f0a8e3bdb9b7d199434c2a5dd7cbb7d3cf69d802029cde1ef5daa07bffa27efc"
     },
     "planning-with-files": {
-      "source": "soucod/planning-with-files-skill",
+      "source": "OthmanAdi/planning-with-files",
       "sourceType": "github",
       "skillPath": "skills/planning-with-files/SKILL.md",
-      "computedHash": "a84ca05e41c0ad81e8b59829cbd09f51ee9a38f5e3b6b3328e415f5326a4eeb7"
+      "computedHash": "9373e52309dae645edc3ce5fe84c72d1817be922cb378a97b2bf4396924ae369"
     },
     "security-review": {
       "source": "getsentry/skills",

@@ -12,3 +12,4 @@ yarn.lock
 .env
 .env.local
 .env.production
+.agents/skills/**

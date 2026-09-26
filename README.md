@@ -41,9 +41,7 @@ This repository serves as a seed for bootstrapping new software projects (web ap
 ### Template Foundations (Survives into Projects)
 - **Universal Operating Laws**: `AI_CONSTITUTION.md` (20 universal engineering laws).
 - **Lightweight Navigation Layer**: `AGENTS.md` (<50 lines) synchronized across Claude, Cursor, Windsurf, Gemini, and Antigravity.
-- **Permanent Rules**: `.agents/rules/` (engineering, security, product, voice).
-- **On-Demand Skills Suite**: `.agents/skills/` (25 specialized on-demand workflows).
-- **Personal Defaults Registry**: `.agents/defaults/preferences.yaml` and `docs/design/DESIGN_DEFAULTS.md`.
+- **On-Demand Skills Suite**: `.agents/skills/` (46 specialized on-demand workflows covering architecture, requirements, code quality, testing, deployment, and web quality).
 - **Reusable Assets**: `.agents/defaults/assets/` (adaptive SVG favicon, app icon, social card).
 - **Deterministic Documentation Tree**: `docs/` (product, architecture, design, engineering, research, AI).
 - **Universal .gitignore Superset**: Comprehensive ignore patterns covering web, mobile, desktop, and native runtimes.
@@ -146,29 +144,19 @@ The AI agent will:
 │   │   ├── backend/          # Node.js, Spring Boot
 │   │   └── native/           # C++, Rust
 │   │
-│   ├── skills/               # Orchestrated skills portfolio (local + external expertise)
-│   │   ├── new-project/      # Repository bootstrap workflow (local)
-│   │   ├── project-audit/    # Evidence-based codebase health inspection across 6 pillars (local)
-│   │   ├── api-design/       # Schema validation, standardized error envelopes, idempotency (local)
-│   │   ├── backend-design/   # Layered services, transactions, worker patterns (local)
-│   │   ├── database-design/  # Relational constraints, indexing, safe migrations (local)
-│   │   ├── data-modeling/    # Tenancy, soft delete, audit tables, archival (local)
-│   │   ├── dependency-review/# Package evaluation, bundle impact checks (local)
-│   │   ├── system-design-first-principles/ # First-principles architecture & boundaries (external)
-│   │   ├── planning-with-files/            # Persistent file-based task planning (external)
-│   │   ├── debugger/                       # Hypothesis-driven root-cause debugging (external)
-│   │   ├── define-evals/                   # Eval-driven development from specs (external)
-│   │   ├── test-driven-development/        # Red-green-refactor TDD loop (external)
-│   │   ├── agentic-browser-testing/        # Goal-driven browser E2E testing (external)
-│   │   ├── security-review/                # Sentry-grade high-confidence vulnerability audit (external)
-│   │   ├── documentation-and-adrs/         # Technical documentation & ADR lifecycle (external)
-│   │   ├── performance-optimization/       # Profiling, Core Web Vitals, query optimization (external)
-│   │   ├── tailwind-css/                   # Tailwind CSS v4 styling & variants (external)
-│   │   ├── ui-visual-composition/          # Visual hierarchy, typography, depth & layout (external)
-│   │   ├── design-systems-frontend-architecture/ # Tokens, component contracts, CSS strategy (external)
-│   │   ├── ux-usability-foundations/       # Heuristics, feedback, error prevention (external)
-│   │   ├── ux-writing-content-design/      # Microcopy, empty states, labels, onboarding (external)
-│   │   └── accessibility-inclusive-design/ # WCAG 2.1/2.2 audit, screen reader matrix (external)
+│   ├── skills/               # Orchestrated skills portfolio (46 local & community skills)
+│   │   ├── Requirements/Spec # grilling, domain-modeling, to-spec, to-tickets
+│   │   ├── Project Lifecycle # new-project, project-setup, project-analysis, project-audit, project-memory
+│   │   ├── Architecture/Data # system-design-first-principles, backend-design, api-design, database-design, data-modeling
+│   │   ├── Quality & Review  # code-review, pr-code-review, simplification, refactoring, repository-cleanup
+│   │   ├── Dependencies      # dependency-audit, dependency-upgrade
+│   │   ├── Security & Ops    # security-review, threat-model, observability-review, deployment-review, incident-review
+│   │   ├── Testing & Debug   # test-driven-development, define-evals, agentic-browser-testing, debugger
+│   │   ├── Planning/Context  # planning-with-files, context-engineering, orchestration, retrospective, why-we-do-this
+│   │   ├── Git Workflow      # git-workflow
+│   │   ├── Frontend & Design # design-systems-frontend-architecture, ui-visual-composition, ux-usability-foundations, ux-writing-content-design, accessibility-inclusive-design, tailwind-css
+│   │   └── Web & SEO         # web-quality, seo
+│   │   └── (See docs/AI/EXTERNAL_SKILLS.md for full provenance registry & overlap resolutions)
 │   │
 │   └── scripts/
 │       ├── check-headers.js  # Validates 3-line file headers on source files

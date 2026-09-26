@@ -1,0 +1,4 @@
+interface:
+  display_name: "PR Code Review"
+  short_description: "Multi-agent PR, branch, and diff review"
+  default_prompt: "Use $pr-code-review to review this pull request, branch, or Git range."

@@ -1,6 +1,6 @@
 #!/bin/sh
 # List saved named plans, show the shared pointer, or change that pointer.
-# Usage: set-active-plan.sh [--list|-l|PLAN_ID]
+# Usage: set-active-plan.sh [--list|-l|--verify-root|PLAN_ID]
 # Operates on the current project; listing never binds a host or injects data.
 set -eu
 PLAN_ROOT="${PWD}/.planning"
@@ -220,8 +220,32 @@ phase_status() {
     ' < "$1"
 }
 
+# A pre-existing pointer must be a contained regular file before it is
+# replaced: a link would be followed or its shared inode overwritten.
+pointer_is_unsafe() {
+    { [ -e "${ACTIVE_FILE}" ] || [ -L "${ACTIVE_FILE}" ]; } &&
+        { [ -L "${ACTIVE_FILE}" ] || [ ! -f "${ACTIVE_FILE}" ] || ! is_within_root "${ACTIVE_FILE}"; }
+}
+
+# Constant-time check for callers that are about to create a plan: the
+# planning root, when present, must be inside the project, and an existing
+# pointer must be replaceable. Nothing is read, listed, or written.
+verify_root() {
+    if [ -d "${PLAN_ROOT}" ] && ! is_within_root "${PLAN_ROOT}"; then
+        printf '%s\n' 'Error: planning directory is outside the project or cannot be verified.' >&2
+        return 1
+    fi
+    if pointer_is_unsafe; then
+        printf '%s\n' 'Error: active plan pointer is not a safe file inside the project.' >&2
+        return 1
+    fi
+    return 0
+}
+
 current_active() {
-    if [ -f "${ACTIVE_FILE}" ] && is_within_root "${ACTIVE_FILE}"; then
+    # An unreadable pointer is treated as unset; under set -e the read
+    # would otherwise abort listing.
+    if [ -f "${ACTIVE_FILE}" ] && [ -r "${ACTIVE_FILE}" ] && is_within_root "${ACTIVE_FILE}"; then
         _current="$(tr '\r' '\n' < "${ACTIVE_FILE}")"
         # Windows editors and older PowerShell defaults can leave a UTF-8 BOM.
         # Treat it as an encoding marker, not part of the shared plan slug.
@@ -248,6 +272,9 @@ list_plans() {
     printf '%s\n' 'Available plans:'
     for _dir in "${PLAN_ROOT}"/*; do
         [ -d "${_dir}" ] || continue
+        # A linked plan directory is never a plan (#270): no resolver selects
+        # it, so listing it would advertise a PLAN_ID every route refuses.
+        [ -L "${_dir}" ] && continue
         _id="${_dir##*/}"
         slug_is_valid "${_id}" || continue
         is_within_root "${_dir}" || continue
@@ -268,15 +295,17 @@ list_plans() {
 }
 
 if [ "$#" -gt 1 ]; then
-    printf '%s\n' 'Error: list plans or set PLAN_ID in separate calls.' >&2
+    printf '%s\n' 'Error: list plans, verify the root, or set PLAN_ID in separate calls.' >&2
     exit 1
 fi
 
 case "${1:-}" in
     --list|-l) list_plans; exit $? ;;
+    --verify-root) verify_root; exit $? ;;
     --help|-h)
-        printf '%s\n' 'Usage: set-active-plan.sh [--list|PLAN_ID]' \
-            'Lists saved named plans in the current project without selecting a plan.'
+        printf '%s\n' 'Usage: set-active-plan.sh [--list|--verify-root|PLAN_ID]' \
+            'Lists saved named plans in the current project without selecting a plan.' \
+            '--verify-root checks the planning root and pointer without listing or selecting.'
         exit 0 ;;
 esac
 
@@ -286,7 +315,7 @@ if [ "${1:-}" = '' ]; then
         exit 1
     fi
     plan_id="$(current_active)"
-    if [ -n "${plan_id}" ] && [ -d "${PLAN_ROOT}/${plan_id}" ] && is_within_root "${PLAN_ROOT}/${plan_id}"; then
+    if [ -n "${plan_id}" ] && [ -d "${PLAN_ROOT}/${plan_id}" ] && [ ! -L "${PLAN_ROOT}/${plan_id}" ] && is_within_root "${PLAN_ROOT}/${plan_id}"; then
         printf '%s\n' "Active plan: ${plan_id}" "Path: ${PLAN_ROOT}/${plan_id}"
     elif [ -n "${plan_id}" ]; then
         printf '%s\n' "Active plan pointer: ${plan_id} (directory not found or outside project - stale pointer)"
@@ -307,13 +336,15 @@ if [ ! -d "${PLAN_DIR}" ]; then
         "Run: init-session.sh \"${PLAN_ID}\" to create it, or use --list to see available plans." >&2
     exit 1
 fi
+if [ -L "${PLAN_DIR}" ]; then
+    printf '%s\n' "Error: plan directory is a symlink or junction and no route selects it: ${PLAN_DIR}" >&2
+    exit 1
+fi
 if ! is_within_root "${PLAN_ROOT}" || ! is_within_root "${PLAN_DIR}"; then
     printf '%s\n' 'Error: plan directory is outside the project or cannot be verified.' >&2
     exit 1
 fi
-# A pre-existing pointer must itself be a contained regular file before writing.
-if { [ -e "${ACTIVE_FILE}" ] || [ -L "${ACTIVE_FILE}" ]; } &&
-    { [ -L "${ACTIVE_FILE}" ] || [ ! -f "${ACTIVE_FILE}" ] || ! is_within_root "${ACTIVE_FILE}"; }; then
+if pointer_is_unsafe; then
     printf '%s\n' 'Error: active plan pointer is not a safe file inside the project.' >&2
     exit 1
 fi
@@ -326,6 +357,10 @@ temp_file="$(mktemp "${PLAN_ROOT}/.active_plan.XXXXXX")" || {
 trap 'rm -f "${temp_file}"' EXIT
 trap 'exit 1' HUP INT TERM
 printf '%s\n' "${PLAN_ID}" > "${temp_file}"
+# mktemp creates the file 0600; the shared pointer must stay readable by
+# every session, so apply the caller's umask instead (=rw without a who
+# clause is umask-relative in POSIX chmod).
+chmod =rw "${temp_file}" 2>/dev/null || true
 if ! mv -f "${temp_file}" "${ACTIVE_FILE}"; then
     printf '%s\n' 'Error: could not replace the active plan pointer.' >&2
     exit 1

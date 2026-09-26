@@ -21,6 +21,9 @@ const IGNORED_DIRS = new Set([
   "coverage",
   ".git",
 ]);
+const IGNORED_FILES = new Set([
+  "next-env.d.ts",
+]);
 
 let failed = false;
 let checkedCount = 0;
@@ -77,6 +80,9 @@ function walk(dir) {
         walk(path.join(dir, entry.name));
       }
     } else if (entry.isFile()) {
+      if (IGNORED_FILES.has(entry.name)) {
+        continue;
+      }
       const ext = path.extname(entry.name);
       if (SOURCE_EXTENSIONS.has(ext)) {
         checkFile(path.join(dir, entry.name));

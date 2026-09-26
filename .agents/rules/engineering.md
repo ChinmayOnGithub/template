@@ -1,11 +1,11 @@
 # Engineering Standards
 
 ## 1. Clean Layer Separation
-Every mutation and flow must follow strict separation of concerns:
-- **Presentation**: Pure components, handles user interaction, zero direct database access.
-- **Controller / Action / API Route**: Validates input schema (e.g. Zod), checks authenticated session, returns typed status.
+Every mutation and flow must follow strict separation of concerns suited to the architecture:
+- **Presentation / Interface**: Handles user interaction, CLI arguments, or network requests with zero direct database or low-level storage access.
+- **Controller / Action / Entrypoint**: Validates input schemas, checks authentication/authorization context, returns typed responses.
 - **Domain Service**: Encapsulates business logic, invariants, state transitions.
-- **Storage / Database**: Isolated data access layer with strict parameterization.
+- **Storage / Persistence**: Isolated data access layer with strict parameterization.
 
 ## 2. File Header Rule (Mandatory)
 Every human-maintained source file where comments are valid must begin with:
@@ -45,10 +45,11 @@ Comments must explain something that is not obvious from the code.
 - Enable strict typechecking: strict mode, no unchecked indexed access, exact optional properties where appropriate, no implicit override, and no fallthrough cases in switch.
 - Never use `as any` or `as unknown` to bypass type checks. Narrow types explicitly.
 
-## 6. Database Safety (Relational)
-- Universal soft-delete: Tables storing user history or entities with audit significance must support soft deletion via `deletedAt`.
-- Scoped writes: Never execute batch updates or deletes without an explicit where filter.
-- Safe migrations: Migrations must be versioned, backward-compatible, and never destructive on existing databases.
+## 6. Data Integrity & Persistence (Where Applicable)
+For systems with persistent data storage:
+- Non-destructive deletion: Entities with audit or lifecycle significance should prefer non-destructive deletion policies (e.g. `deletedAt` soft deletion or event sourcing) where retention is required.
+- Scoped writes: Never execute batch updates or deletes without an explicit target filter.
+- Safe schema evolution: Migrations must be versioned, backward-compatible, and non-destructive on existing data.
 
 ## 7. Definition of Done
 A task is never complete until:

@@ -15,12 +15,7 @@ Substantial implementation must be preceded by an explicit product brief, scope 
 Existing architectural decisions, schemas, and established patterns take precedence over generic AI habits. Never overwrite project-level conventions with third-party defaults.
 
 ### LAW 4  -  KEEP RESPONSIBILITIES SEPARATED
-Every layer must maintain strict separation of concerns:
-- Presentation renders UI and captures user input.
-- Controllers/Actions validate schemas and authorize sessions.
-- Domain services execute pure business rules.
-- Data layer handles persistence.
-Never place business logic in UI components or controllers.
+Maintain clear boundaries and separation of concerns across application layers. Keep domain logic decoupled from external I/O, transport, presentation, and persistence mechanisms. Where applicable, never embed business logic directly into presentation or request-handling layers.
 
 ### LAW 5  -  PREFER SIMPLE SOLUTIONS
 Implement the simplest robust design that solves the immediate problem. Avoid premature abstractions, unnecessary design patterns, and speculative flexibility.
@@ -32,10 +27,10 @@ Extract shared logic into single, canonical functions or services. Never copy-pa
 Never install an external package if the standard library, platform APIs, or existing project dependencies can reasonably solve the problem. Every new dependency requires evaluating maintenance, bundle weight, and security.
 
 ### LAW 8  -  CONSIDER SECURITY DURING DESIGN
-Security is not a post-launch cleanup phase. Enforce tenant isolation, input validation, output sanitization, least privilege, and secret protection at the moment of design.
+Security is not a post-launch cleanup phase. Enforce strict input validation, output sanitization, least privilege, boundary authorization, and secret protection at the moment of design. Project-specific isolation models (such as multi-tenancy, user sandboxing, or memory safety) must be designed upfront where applicable.
 
 ### LAW 9  -  CONSIDER PERFORMANCE DURING DESIGN
-Identify potential bottlenecks early: query count, network payloads, bundle footprint, rendering frequency, and memory footprint. Eliminate N+1 queries and expensive loops before shipping.
+Identify potential bottlenecks early: execution complexity, resource allocation, payload sizes, I/O latency, and memory footprint. Eliminate wasteful computation, redundant queries, and unconstrained loops before shipping.
 
 ### LAW 10  -  TEST BEHAVIOR
 Write tests that assert user-facing contracts and business invariants. Test state outcomes, error responses, and edge conditions rather than internal implementation details.

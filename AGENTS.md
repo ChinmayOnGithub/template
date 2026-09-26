@@ -21,6 +21,36 @@ External skills provide methodology; the repository provides truth.
 - **Level 3 (Project Decisions)**: `docs/architecture/ARCHITECTURE.md`, `docs/architecture/ADR/`.
 - **Level 4 (Methodology & Workflow)**: `.agents/skills/` (external + local skills). An external skill must never override Level 1-3.
 
+## Task Skill Router
+Route on-demand task needs to matching skills in `.agents/skills/<name>/SKILL.md`:
+- Unfamiliar repository -> `project-analysis`
+- New project setup -> `project-setup`
+- Unclear requirements -> `grilling`
+- Domain modeling -> `domain-modeling`
+- Requirements to spec -> `to-spec`
+- Specification to tasks -> `to-tickets`
+- Multi-step / persistent task -> `planning-with-files`
+- Context boundaries & loading -> `context-engineering`
+- Code quality review -> `code-review`
+- Pull request review -> `pr-code-review`
+- Complexity reduction -> `simplification`
+- Structural change -> `refactoring`
+- Hygiene & dead code -> `repository-cleanup`
+- Dependency security / bloat -> `dependency-audit`
+- Dependency upgrade -> `dependency-upgrade`
+- Security architecture -> `threat-model`
+- Production visibility -> `observability-review`
+- Release preparation -> `deployment-review`
+- Production incident -> `incident-review`
+- Engineering rationale -> `why-we-do-this`
+- Evolving context -> `project-memory`
+- Git branch & commits -> `git-workflow`
+- Web audit & vitals -> `web-quality`
+- Search engine optimization -> `seo`
+- Parallel specialized work -> `orchestration`
+- Milestone review -> `retrospective`
+
+
 ## Source of Truth
 - **Product & Requirements**: `SPEC.md`, `docs/product/`
 - **Engineering Laws & Invariants**: `AI_CONSTITUTION.md`, `docs/architecture/INVARIANTS.md`
