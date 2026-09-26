@@ -37,7 +37,7 @@ jobs:
         run: |
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
             git fetch origin "$GITHUB_BASE_REF" --depth=1
-            git diff --name-only -z "origin/$GITHUB_BASE_REF...HEAD" |
+            git diff --name-only -z FETCH_HEAD |
               xargs -0 -r bunx prettier --check
           else
             git diff-tree --no-commit-id --name-only -z -r "$GITHUB_SHA" |
