@@ -38,7 +38,7 @@ jobs:
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
             git fetch origin "$GITHUB_BASE_REF" --depth=1
             git diff --name-only -z FETCH_HEAD |
-              xargs -0 -r bunx prettier --write
+              xargs -0 -r bunx prettier --write --ignore-unknown
             git diff -- .agents/scripts tests/context .github/workflows
             exit 1
           else
