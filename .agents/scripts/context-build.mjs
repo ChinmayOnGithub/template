@@ -23,8 +23,9 @@ function arg(name, fallback = "") {
 
 function tokens(value) {
   return [...new Set(
-    value.toLowerCase()
+    value
       .replace(/([a-z])([A-Z])/g, "$1 $2")
+      .toLowerCase()
       .split(/[^a-z0-9_$-]+/)
       .filter((item) => item.length >= 3)
   )];
@@ -36,8 +37,13 @@ function tokenCount(value) {
 
 function changedFiles() {
   try {
-    return execFileSync("git", ["diff", "--name-only", "HEAD"], { cwd: ROOT, encoding: "utf8" })
-      .split(/\r?\n/).map((v) => v.trim()).filter(Boolean);
+    return execFileSync("git", ["diff", "--name-only", "HEAD"], {
+      cwd: ROOT,
+      encoding: "utf8"
+    })
+      .split(/\r?\n/)
+      .map((value) => value.trim())
+      .filter(Boolean);
   } catch {
     return [];
   }
@@ -46,38 +52,51 @@ function changedFiles() {
 function readRange(source) {
   const match = source.match(/^(.*):(\d+)$/);
   if (!match) return "";
+
   const file = path.join(ROOT, match[1]);
   if (!fs.existsSync(file)) return "";
+
   const line = Number(match[2]);
   const lines = fs.readFileSync(file, "utf8").split(/\r?\n/);
   const start = Math.max(1, line - 4);
   const end = Math.min(lines.length, line + 20);
-  return lines.slice(start - 1, end).map((text, index) => `${start + index}: ${text}`).join("\n");
+
+  return lines
+    .slice(start - 1, end)
+    .map((text, index) => `${start + index}: ${text}`)
+    .join("\n");
 }
 
 function score(item, queryTokens, changed) {
-  let score = item.type === "symbol" ? 5 : 2;
+  let value = item.type === "symbol" ? 5 : 2;
   const haystack = [
-    item.id, item.source, item.summary,
-    ...(item.keywords ?? []), ...(item.symbols ?? [])
+    item.id,
+    item.source,
+    item.summary,
+    ...(item.keywords ?? []),
+    ...(item.symbols ?? [])
   ].join(" ").toLowerCase();
 
   for (const term of queryTokens) {
-    if (haystack.includes(term)) score += 3;
-    if ((item.symbols ?? []).some((symbol) => symbol.toLowerCase() === term)) score += 7;
-    if (item.source.toLowerCase().includes(term)) score += 2;
+    if (haystack.includes(term)) value += 3;
+    if ((item.symbols ?? []).some((symbol) => symbol.toLowerCase() === term)) value += 7;
+    if (item.source.toLowerCase().includes(term)) value += 2;
   }
 
   const sourcePath = item.source.split(":")[0];
-  if (changed.has(sourcePath)) score += 5;
-  if (item.type === "architecture" || item.type === "invariant" || item.type === "decision") score += 4;
-  return score;
+  if (changed.has(sourcePath)) value += 5;
+  if (item.type === "architecture" || item.type === "invariant" || item.type === "decision") {
+    value += 4;
+  }
+
+  return value;
 }
 
 function main() {
   const task = arg("task");
+
   if (!task) {
-    console.error("Usage: npm run context:build -- --task=\"your task\" [--budget=2000] [--source=false]");
+    console.error('Usage: npm run context:build -- --task="your task" [--budget=2000] [--source=false] [--out=.agents/context/last-context.json]');
     process.exit(1);
   }
 
@@ -87,6 +106,11 @@ function main() {
   }
 
   const budget = Number(arg("budget", "2000"));
+  if (!Number.isFinite(budget) || budget < 1) {
+    console.error("Context budget must be a positive number.");
+    process.exit(1);
+  }
+
   const includeSource = arg("source", "true") !== "false";
   const cache = JSON.parse(fs.readFileSync(CACHE_PATH, "utf8"));
   const queryTokens = tokens(task);
@@ -98,14 +122,22 @@ function main() {
     .sort((a, b) => b.score - a.score || a.item.id.localeCompare(b.item.id));
 
   const selected = [];
+  const selectedSources = new Set();
   let usedTokens = tokenCount(task);
 
   for (const entry of ranked) {
+    const sourceKey = entry.item.source.split(":")[0];
+
+    if (entry.item.type === "file" && selectedSources.has(sourceKey)) {
+      continue;
+    }
+
     const summary = `[${entry.item.type}] ${entry.item.source}\n${entry.item.summary}`;
     const summaryTokens = tokenCount(summary);
     const source = includeSource ? readRange(entry.item.source) : "";
     const sourceTokens = tokenCount(source);
     const cost = summaryTokens + sourceTokens;
+
     if (usedTokens + cost > budget) continue;
 
     selected.push({
@@ -113,7 +145,9 @@ function main() {
       score: entry.score,
       sourceEvidence: source || undefined
     });
-    selectedSources.add(sourceKey);\n    usedTokens += cost;
+
+    selectedSources.add(sourceKey);
+    usedTokens += cost;
   }
 
   const result = {
@@ -124,6 +158,13 @@ function main() {
     selectedItems: selected.length,
     items: selected
   };
+
+  const outputPath = arg("out");
+  if (outputPath) {
+    const resolved = path.resolve(ROOT, outputPath);
+    fs.mkdirSync(path.dirname(resolved), { recursive: true });
+    fs.writeFileSync(resolved, JSON.stringify(result, null, 2) + "\n", "utf8");
+  }
 
   process.stdout.write(JSON.stringify(result, null, 2) + "\n");
 }
