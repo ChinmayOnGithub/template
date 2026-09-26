@@ -8,7 +8,9 @@ import { describe, expect, it } from "vitest";
 import crypto from "node:crypto";
 
 function tokenize(value) {
-  return [...new Set(value.toLowerCase().split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3))];
+  const normalized = value.toLowerCase();
+  const parts = normalized.split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3);
+  return [...new Set([normalized, ...parts])];
 }
 
 function tokenCount(value) {
@@ -30,7 +32,7 @@ function score(item, queryTokens) {
 
 describe("context retrieval", () => {
   it("normalizes task terms deterministically", () => {
-    expect(tokenize("AuthService createUser")).toEqual(["authservice", "createuser"]);
+    expect(tokenize("AuthService createUser")).toEqual(["authservice createuser", "authservice", "createuser"]);
     expect(tokenize("database, API, auth")).toEqual(["database", "api", "auth"]);
   });
 
