@@ -36,25 +36,27 @@ function tokenCount(value) {
 }
 
 function changedFiles() {
+  const names = [];
+
   try {
-    return execFileSync("git", ["diff", "--name-only", "HEAD"], {
-      cwd: ROOT,
-      encoding: "utf8"
-    })
-      .split(/\r?\n/)
-      .map((value) => value.trim())
-      .filter(Boolean);
-    const recent = execFileSync("git", ["diff", "--name-only", "HEAD~5..HEAD"], {
-      cwd: ROOT,
-      encoding: "utf8"
-    })
-      .split(/\r?\n/)
-      .map((value) => value.trim())
-      .filter(Boolean);
-    return [...new Set([...current, ...recent])];
-  } catch {
-    return [];
-  }
+    names.push(
+      ...execFileSync("git", ["diff", "--name-only", "HEAD"], {
+        cwd: ROOT,
+        encoding: "utf8"
+      }).split(/\r?\n/)
+    );
+  } catch {}
+
+  try {
+    names.push(
+      ...execFileSync("git", ["diff", "--name-only", "HEAD~5..HEAD"], {
+        cwd: ROOT,
+        encoding: "utf8"
+      }).split(/\r?\n/)
+    );
+  } catch {}
+
+  return [...new Set(names.map((value) => value.trim()).filter(Boolean))];
 }
 
 function readRange(source) {
