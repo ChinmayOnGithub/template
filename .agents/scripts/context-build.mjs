@@ -22,17 +22,19 @@ function arg(name, fallback = "") {
 }
 
 function tokens(value) {
-  return [...new Set(
-    value
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .toLowerCase()
-      .split(/[^a-z0-9_$-]+/)
-      .filter((item) => item.length >= 3)
-  )];
+  const normalized = value.toLowerCase();
+  const originalTerms = normalized.split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3);
+  const splitTerms = value
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .toLowerCase()
+    .split(/[^a-z0-9_$-]+/)
+    .filter((item) => item.length >= 3);
+
+  return [...new Set([...originalTerms, ...splitTerms])];
 }
 
 function tokenCount(value) {
-  return value.trim() ? value.trim().split(/\s+/).length : 0;
+  return value.trim() ? Math.ceil(value.trim().length / 4) : 0;
 }
 
 function changedFiles() {
@@ -87,15 +89,18 @@ function score(item, queryTokens, changed) {
     ...(item.symbols ?? []),
     ...(item.relations?.dependsOn ?? []),
     ...(item.relations?.relatedTo ?? [])
-  ].join(" ").toLowerCase();
+  ].join(" ");
+  const haystackTokens = new Set(tokens(haystack));
+  const sourcePath = item.source.split(":")[0];
+  const sourceTokens = new Set(tokens(sourcePath));
 
   for (const term of queryTokens) {
-    if (haystack.includes(term)) value += 3;
+    if (haystackTokens.has(term)) value += 3;
     if ((item.symbols ?? []).some((symbol) => symbol.toLowerCase() === term)) value += 7;
-    if (item.source.toLowerCase().includes(term)) value += 2;
+    if (sourceTokens.has(term)) value += 2;
   }
 
-  const sourcePath = item.source.split(":")[0];
+  
   if (changed.has(sourcePath)) value += 5;
   if (item.type === "architecture" || item.type === "invariant" || item.type === "decision") {
     value += 4;
@@ -167,7 +172,9 @@ function main() {
     task,
     budget,
     usedTokens,
+    utilization: Number((usedTokens / budget).toFixed(3)),
     selectedItems: selected.length,
+    sourceItems: selected.filter((item) => item.sourceEvidence).length,
     items: selected
   };
 
