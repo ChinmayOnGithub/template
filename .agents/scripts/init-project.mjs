@@ -6,6 +6,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +19,7 @@ function parseArgs() {
     name: "",
     type: "web",
     cleanup: false,
-    applyDefaults: true,
+    applyDefaults: true
   };
 
   for (const arg of args) {
@@ -32,6 +33,7 @@ function parseArgs() {
       options.applyDefaults = false;
     }
   }
+
   return options;
 }
 
@@ -40,12 +42,12 @@ function updatePackageJson(projectName, projectType, cleanup) {
   if (!fs.existsSync(pkgPath)) return;
 
   const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+
   if (projectName) {
     pkg.name = projectName.toLowerCase().replace(/[^a-z0-9_-]/g, "-");
   }
 
   if (cleanup && projectType !== "web") {
-    // Remove web-specific dependencies
     const webDeps = [
       "@radix-ui/react-slot",
       "class-variance-authority",
@@ -54,7 +56,7 @@ function updatePackageJson(projectName, projectType, cleanup) {
       "next",
       "react",
       "react-dom",
-      "tailwind-merge",
+      "tailwind-merge"
     ];
     const webDevDeps = [
       "@playwright/test",
@@ -64,15 +66,17 @@ function updatePackageJson(projectName, projectType, cleanup) {
       "@types/react-dom",
       "eslint-config-next",
       "postcss",
-      "tailwindcss",
+      "tailwindcss"
     ];
 
     if (pkg.dependencies) {
-      for (const d of webDeps) delete pkg.dependencies[d];
+      for (const dependency of webDeps) delete pkg.dependencies[dependency];
     }
+
     if (pkg.devDependencies) {
-      for (const d of webDevDeps) delete pkg.devDependencies[d];
+      for (const dependency of webDevDeps) delete pkg.devDependencies[dependency];
     }
+
     if (pkg.scripts) {
       delete pkg.scripts.dev;
       delete pkg.scripts.start;
@@ -96,8 +100,10 @@ function copyDefaultAssets() {
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });
   }
+
   const faviconSource = path.join(ROOT, ".agents/defaults/assets/favicon.svg");
   const faviconDest = path.join(publicDir, "favicon.svg");
+
   if (fs.existsSync(faviconSource) && !fs.existsSync(faviconDest)) {
     fs.copyFileSync(faviconSource, faviconDest);
     console.log("[DEFAULTS] Copied adaptive SVG favicon to public/favicon.svg.");
@@ -113,24 +119,37 @@ function updateSpec(projectName) {
   }
 }
 
-function run() {
-  const opts = parseArgs();
-  console.log(`[INIT] Initializing project: ${opts.name || "unnamed"} (Category: ${opts.type})`);
+function buildContextIndex() {
+  try {
+    execFileSync(process.execPath, [path.join(__dirname, "context-index.mjs")], {
+      cwd: ROOT,
+      stdio: "inherit"
+    });
+  } catch {
+    console.warn("[CONTEXT] Index generation failed. Run npm run context:index manually.");
+  }
+}
 
-  if (opts.name) {
-    updatePackageJson(opts.name, opts.type, opts.cleanup);
-    updateSpec(opts.name);
+function run() {
+  const options = parseArgs();
+  console.log(`[INIT] Initializing project: ${options.name || "unnamed"} (Category: ${options.type})`);
+
+  if (options.name) {
+    updatePackageJson(options.name, options.type, options.cleanup);
+    updateSpec(options.name);
   }
 
-  if (opts.cleanup && opts.type !== "web") {
+  if (options.cleanup && options.type !== "web") {
     removeNonWebFiles();
   }
 
-  if (opts.applyDefaults && opts.type === "web") {
+  if (options.applyDefaults && options.type === "web") {
     copyDefaultAssets();
   }
 
-  // Build the local context index after project structure and defaults are finalized.\n  const { execFileSync } = await import("node:child_process");\n  try {\n    execFileSync(process.execPath, [path.join(__dirname, "context-index.mjs")], { cwd: ROOT, stdio: "inherit" });\n  } catch {\n    console.warn("[CONTEXT] Index generation failed. Run npm run context:index manually.");\n  }\n\n  console.log("[INIT] Initialization completed successfully.");
+  buildContextIndex();
+
+  console.log("[INIT] Initialization completed successfully.");
   console.log("[NEXT STEPS]");
   console.log("1. Review SPEC.md and docs/product/PRODUCT_BRIEF.md");
   console.log("2. Record technical choices in docs/engineering/TECH_STACK.md");
