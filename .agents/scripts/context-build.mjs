@@ -113,7 +113,7 @@ function main() {
       score: entry.score,
       sourceEvidence: source || undefined
     });
-    usedTokens += cost;
+    selectedSources.add(sourceKey);\n    usedTokens += cost;
   }
 
   const result = {
