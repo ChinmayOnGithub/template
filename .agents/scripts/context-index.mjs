@@ -92,7 +92,8 @@ function firstSummary(content, relativePath) {
   return relativePath;
 }
 
-function imports(content) {
+function imports(content, parseCode) {
+  if (!parseCode) return [];
   const values = [];
   const patterns = [
     /\bimport\s+(?:[^"'\n]+?\s+from\s+)?["']([^"']+)["']/g,
@@ -109,7 +110,8 @@ function imports(content) {
   return [...new Set(values)].sort();
 }
 
-function symbols(content) {
+function symbols(content, parseCode) {
+  if (!parseCode) return [];
   const found = [];
 
   for (const pattern of SYMBOL_PATTERNS) {
@@ -151,8 +153,9 @@ function build() {
     const relativePath = path.relative(ROOT, fullPath).replaceAll(path.sep, "/");
     const content = fs.readFileSync(fullPath, "utf8");
     const sourceHash = hash(content);
-    const fileSymbols = symbols(content);
-    const dependencies = imports(content);
+    const parseCode = [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".rs", ".go", ".java", ".kt", ".cpp", ".cc", ".c", ".h", ".hpp", ".py", ".sh"].includes(path.extname(relativePath).toLowerCase());
+    const fileSymbols = symbols(content, parseCode);
+    const dependencies = imports(content, parseCode);
     const keywords = tokenize(
       `${relativePath} ${firstSummary(content, relativePath)} ${fileSymbols.map((item) => item.name).join(" ")}`
     );
