@@ -1,0 +1,25 @@
+name: Security Review
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  audit:
+    name: Dependency Audit and Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun runtime
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Audit dependencies for known vulnerabilities
+        run: bun pm audit

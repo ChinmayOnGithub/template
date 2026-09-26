@@ -1,0 +1,182 @@
+/* design-system/tokens.css
+ * Tracker OS  -  Canonical Design Tokens & Semantic System
+ */
+
+:root {
+  /* ── 1. Semantic Color Tokens (Light Mode) ─────────────────────────────────── */
+  --background: #f8fafc;
+  --foreground: #09090b;
+
+  --surface: #ffffff;
+  --surface-muted: #f4f4f6;
+  --surface-elevated: #ffffff;
+
+  --border: rgba(0, 0, 0, 0.1);
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --border-strong: rgba(0, 0, 0, 0.2);
+
+  --primary: #007aff;
+  --primary-hover: #0056b3;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f4f4f6;
+  --secondary-hover: #e4e4e7;
+  --secondary-foreground: #18181b;
+
+  --muted: #f4f4f6;
+  --muted-foreground: #71717a;
+
+  --accent: rgba(0, 0, 0, 0.05);
+  --accent-hover: rgba(0, 0, 0, 0.08);
+  --accent-foreground: #09090b;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --destructive: #ef4444;
+  --destructive-hover: #dc2626;
+  --info: #3b82f6;
+
+  --focus-ring: rgba(0, 122, 255, 0.4);
+
+  /* ── Backward-Compatible Aliases ────────────────────────────────────────── */
+  --color-bg-base: var(--background);
+  --color-bg-surface: var(--surface);
+  --color-bg-subtle: var(--surface-muted);
+  --color-border: var(--border);
+  --color-text-main: var(--foreground);
+  --color-text-muted: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+
+  --color-external: var(--info);
+  --color-completed: var(--success);
+  --color-warning: var(--warning);
+  --color-overdue: var(--destructive);
+  --color-personal: #8b5cf6;
+  --color-archived: #6b7280;
+
+  /* ── 2. Elevation / Shadow Scale ─────────────────────────────────────────── */
+  --elevation-flat: none;
+  --elevation-surface: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --elevation-raised: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --elevation-floating: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --elevation-modal: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+
+  --card-shadow: var(--elevation-surface);
+  --card-hover-shadow: var(--elevation-raised);
+  --card-transition: all var(--motion-duration-normal) var(--motion-ease-standard);
+
+  /* ── 3. Border Radius Scale ──────────────────────────────────────────────── */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+  --radius-pill: 9999px;
+
+  --card-radius: var(--radius-md);
+  --card-border-width: 1px;
+  --card-padding: 16px;
+  --card-header-spacing: 12px;
+
+  /* ── 4. Spacing Scale (4px base) ─────────────────────────────────────────── */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+
+  /* ── 5. Typography Scale ─────────────────────────────────────────────────── */
+  --font-size-xs2: 10px;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+
+  /* ── 6. Motion & Durations ───────────────────────────────────────────────── */
+  --motion-duration-fast: 150ms;
+  --motion-duration-normal: 200ms;
+  --motion-duration-slow: 300ms;
+  --motion-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+
+  /* ── 7. Touch / Usability Bounds ─────────────────────────────────────────── */
+  --click-target-min: 44px;
+}
+
+.dark {
+  /* ── Semantic Color Tokens (Dark Mode) ────────────────────────────────────── */
+  --background: #09090b;
+  --foreground: #f4f4f5;
+
+  --surface: #18181b;
+  --surface-muted: #1c1c1f;
+  --surface-elevated: #27272a;
+
+  --border: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-strong: rgba(255, 255, 255, 0.2);
+
+  --primary: #818cf8;
+  --primary-hover: #6366f1;
+  --primary-foreground: #ffffff;
+
+  --secondary: #27272a;
+  --secondary-hover: #3f3f46;
+  --secondary-foreground: #f4f4f5;
+
+  --muted: #27272a;
+  --muted-foreground: #a1a1aa;
+
+  --accent: rgba(255, 255, 255, 0.05);
+  --accent-hover: rgba(255, 255, 255, 0.08);
+  --accent-foreground: #f4f4f5;
+
+  --success: #34d399;
+  --warning: #fbbf24;
+  --destructive: #f87171;
+  --destructive-hover: #ef4444;
+  --info: #60a5fa;
+
+  --focus-ring: rgba(129, 140, 248, 0.5);
+
+  /* ── Backward-Compatible Aliases ────────────────────────────────────────── */
+  --color-bg-base: var(--background);
+  --color-bg-surface: var(--surface);
+  --color-bg-subtle: var(--surface-muted);
+  --color-border: var(--border);
+  --color-text-main: var(--foreground);
+  --color-text-muted: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-accent: var(--accent);
+
+  --color-external: var(--info);
+  --color-completed: var(--success);
+  --color-warning: var(--warning);
+  --color-overdue: var(--destructive);
+  --color-personal: #a78bfa;
+  --color-archived: #9ca3af;
+
+  --card-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.2);
+  --card-hover-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+}
+
+/* ── 8. Semantic Layout Utility Helpers ───────────────────────────────────── */
+.stack-xs { display: flex; flex-direction: column; gap: var(--spacing-1); }
+.stack-sm { display: flex; flex-direction: column; gap: var(--spacing-2); }
+.stack-md { display: flex; flex-direction: column; gap: var(--spacing-4); }
+.stack-lg { display: flex; flex-direction: column; gap: var(--spacing-6); }
+
+.page-gap { gap: var(--spacing-6); }
+.section-gap { gap: var(--spacing-4); }
+.content-gap { gap: var(--spacing-3); }

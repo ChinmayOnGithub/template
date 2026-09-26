@@ -1,0 +1,51 @@
+{
+  "name": "universal-ai-project-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Universal AI-first software project bootstrap template with strong personal defaults",
+  "scripts": {
+    "init-project": "node .agents/scripts/init-project.mjs",
+    "validate-template": "node .agents/scripts/validate-template.mjs",
+    "audit-context": "node .agents/scripts/audit-context.mjs",
+    "check-headers": "node .agents/scripts/check-headers.mjs",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@radix-ui/react-slot": "^1.1.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.16.0",
+    "next": "^15.2.1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.0",
+    "@playwright/test": "^1.51.0",
+    "@tailwindcss/postcss": "^4.0.9",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@typescript-eslint/eslint-plugin": "^8.26.0",
+    "@typescript-eslint/parser": "^8.26.0",
+    "eslint": "^9.21.0",
+    "eslint-config-next": "^15.2.1",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.3",
+    "tailwindcss": "^4.0.9",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.7"
+  }
+}

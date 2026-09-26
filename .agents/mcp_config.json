@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "razorpay": {
+      "command": "node",
+      "args": [".agents/scripts/razorpay-bridge.mjs"]
+    }
+  }
+}

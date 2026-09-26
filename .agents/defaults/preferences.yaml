@@ -1,0 +1,61 @@
+# Personal Defaults Registry
+# These are recommended personal preferences, not universal dogmatic mandates.
+# Projects may adopt, customize, or override these defaults during initialization.
+
+design:
+  aesthetic:
+    canvas_background: "#010102"
+    surface_1: "#0f1011"
+    surface_2: "#141516"
+    surface_3: "#18191a"
+    surface_4: "#191a1b"
+    hairline_border: "#23252a"
+    hairline_border_hover: "#34343a"
+    primary_accent: "#5e6ad2"
+    primary_accent_hover: "#828fff"
+    text_primary: "#f7f8f8"
+    text_muted: "#d0d6e0"
+    text_subtle: "#8a8f98"
+  typography:
+    primary_sans: "Inter, Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+    monospace: "'JetBrains Mono', 'Geist Mono', Menlo, Monaco, Consolas, monospace"
+    heading_scale: "measured negative tracking (-0.02em to -0.05em)"
+    tabular_numbers: true
+  layout:
+    grid_base: 8
+    border_radius: "0.5rem (rounded-md)"
+    density: "high information density, compact padding, zero fuzzy drop shadows"
+  icons:
+    preferred_library: "lucide-react"
+    default_stroke_width: 1.5
+    default_size: "16px (sm), 20px (md), 24px (lg)"
+  favicon:
+    format: "svg"
+    adaptive_theme: true
+    source_asset: ".agents/defaults/assets/favicon.svg"
+
+tooling:
+  package_manager: "bun"
+  test_framework_unit: "vitest"
+  test_framework_e2e: "playwright"
+  formatter: "prettier"
+  linter: "eslint"
+  typescript_strictness:
+    strict: true
+    noUncheckedIndexedAccess: true
+    exactOptionalPropertyTypes: true
+    noImplicitOverride: true
+    noFallthroughCasesInSwitch: true
+
+engineering:
+  layer_architecture: "Presentation -> Controller/Action -> Domain Service -> Data Repository"
+  file_headers: true
+  file_header_format: "3-line comment /* filename.ext \\n * what \\n * why */"
+  universal_soft_delete_for_history: true
+  verification_contract: "tests pass, typecheck clean, lint clean, build passes"
+
+communication:
+  persona: "Lead Principal Engineer and Technical Co-Founder"
+  tone: "direct, professional, factual, zero filler"
+  emojis: false
+  em_dashes: false

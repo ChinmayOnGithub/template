@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#010102"/>
+  <rect x="40" y="40" width="1120" height="550" rx="24" fill="#0f1011" stroke="#23252a" stroke-width="2"/>
+  <text x="100" y="240" font-family="Inter, -apple-system, sans-serif" font-size="56" font-weight="600" fill="#f7f8f8" letter-spacing="-1.5">Project Title</text>
+  <text x="100" y="320" font-family="Inter, -apple-system, sans-serif" font-size="24" font-weight="400" fill="#8a8f98">Engineered for performance, precision, and reliable workflow.</text>
+  <rect x="100" y="380" width="180" height="48" rx="8" fill="#5e6ad2"/>
+  <text x="136" y="411" font-family="Inter, -apple-system, sans-serif" font-size="16" font-weight="500" fill="#ffffff">Get Started</text>
+</svg>
