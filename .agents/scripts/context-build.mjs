@@ -22,13 +22,13 @@ function arg(name, fallback = "") {
 }
 
 function tokens(value) {
-  return [...new Set(
-    value
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .toLowerCase()
-      .split(/[^a-z0-9_$-]+/)
-      .filter((item) => item.length >= 3)
-  )];
+  const normalized = value.toLowerCase();
+  const parts = normalized
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .split(/[^a-z0-9_$-]+/)
+    .filter((item) => item.length >= 3);
+
+  return [...new Set([normalized, ...parts])];
 }
 
 function tokenCount(value) {
