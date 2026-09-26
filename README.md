@@ -146,30 +146,29 @@ The AI agent will:
 │   │   ├── backend/          # Node.js, Spring Boot
 │   │   └── native/           # C++, Rust
 │   │
-│   ├── skills/               # 25 On-demand specialized workflows
-│   │   ├── new-project/      # Repository bootstrap workflow
-│   │   ├── project-audit/    # Codebase health inspection (CRITICAL to LOW)
-│   │   ├── architecture/     # System topology and boundary design
-│   │   ├── backend-design/   # Layered services, transactions, worker patterns
-│   │   ├── api-design/       # Schema validation, error envelopes, pagination
-│   │   ├── database-design/  # Relational constraints, indexing, safe migrations
-│   │   ├── data-modeling/    # Tenancy, soft delete, audit tables, archival
-│   │   ├── frontend-design/  # Near-black canvas, hairline borders, density
-│   │   ├── ui-ux/            # 5-state lifecycle (idle, loading, success, error, empty)
-│   │   ├── accessibility/    # Keyboard navigation, focus rings, WCAG
-│   │   ├── visual-qa/        # Layout inspection, overflow checks
-│   │   ├── testing/          # Smallest meaningful tests, boundary conditions
-│   │   ├── eval-driven-development/ # Executable Evals for user journeys
-│   │   ├── debugging/        # Root-cause diagnostic protocol
-│   │   ├── security-review/  # Tenant isolation, OWASP ASVS checks
-│   │   ├── performance-review/# Profiling, N+1 query elimination
-│   │   ├── browser-testing/  # Automated browser navigation and screenshots
-│   │   ├── dependency-review/# Package evaluation, bundle impact checks
-│   │   ├── migration/        # Non-destructive schema and state transitions
-│   │   ├── documentation/    # Anti-drift documentation sync
-│   │   ├── adr/              # Architectural Decision Record lifecycle
-│   │   ├── release/          # Versioning, changelog, deployment gates
-│   │   └── git-workflow/     # Atomic commits, verification before commit
+│   ├── skills/               # Orchestrated skills portfolio (local + external expertise)
+│   │   ├── new-project/      # Repository bootstrap workflow (local)
+│   │   ├── project-audit/    # Evidence-based codebase health inspection across 6 pillars (local)
+│   │   ├── api-design/       # Schema validation, standardized error envelopes, idempotency (local)
+│   │   ├── backend-design/   # Layered services, transactions, worker patterns (local)
+│   │   ├── database-design/  # Relational constraints, indexing, safe migrations (local)
+│   │   ├── data-modeling/    # Tenancy, soft delete, audit tables, archival (local)
+│   │   ├── dependency-review/# Package evaluation, bundle impact checks (local)
+│   │   ├── system-design-first-principles/ # First-principles architecture & boundaries (external)
+│   │   ├── planning-with-files/            # Persistent file-based task planning (external)
+│   │   ├── debugger/                       # Hypothesis-driven root-cause debugging (external)
+│   │   ├── define-evals/                   # Eval-driven development from specs (external)
+│   │   ├── test-driven-development/        # Red-green-refactor TDD loop (external)
+│   │   ├── agentic-browser-testing/        # Goal-driven browser E2E testing (external)
+│   │   ├── security-review/                # Sentry-grade high-confidence vulnerability audit (external)
+│   │   ├── documentation-and-adrs/         # Technical documentation & ADR lifecycle (external)
+│   │   ├── performance-optimization/       # Profiling, Core Web Vitals, query optimization (external)
+│   │   ├── tailwind-css/                   # Tailwind CSS v4 styling & variants (external)
+│   │   ├── ui-visual-composition/          # Visual hierarchy, typography, depth & layout (external)
+│   │   ├── design-systems-frontend-architecture/ # Tokens, component contracts, CSS strategy (external)
+│   │   ├── ux-usability-foundations/       # Heuristics, feedback, error prevention (external)
+│   │   ├── ux-writing-content-design/      # Microcopy, empty states, labels, onboarding (external)
+│   │   └── accessibility-inclusive-design/ # WCAG 2.1/2.2 audit, screen reader matrix (external)
 │   │
 │   └── scripts/
 │       ├── check-headers.js  # Validates 3-line file headers on source files

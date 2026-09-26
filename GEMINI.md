@@ -7,9 +7,19 @@ Before modifying code:
 3. Check `.agents/rules/` for permanent standards on engineering, security, product, and voice.
 4. If initializing or planning a new project, run `.agents/prompts/new-project.md`.
 5. If working on a specific project type, consult `.agents/project-types/<category>/`.
-6. Load the specific relevant skill from `.agents/skills/<skill-name>/SKILL.md` (e.g. `frontend-design`, `eval-driven-development`, `debugging`).
+6. Route expertise using the Skill Routing Hierarchy:
+   - **Generic disciplines** (UI/UX, Tailwind, debugging, testing, architecture, planning, evals): load external Agent Skills from `.agents/skills/<skill-name>/SKILL.md` (see `docs/AI/EXTERNAL_SKILLS.md`).
+   - **Personal preferences** (fonts, density, colors, aesthetic): consult `.agents/defaults/preferences.yaml` and `docs/design/DESIGN_DEFAULTS.md`.
+   - **Project-specific orchestration & invariants**: consult local skills (`new-project`, `project-audit`, `api-design`, `backend-design`, `data-modeling`, `database-design`) and project specs.
 7. Inspect existing implementation patterns before creating new ones.
 8. Run the smallest relevant verification after changes.
+
+## Skill Routing Hierarchy
+External skills provide methodology; the repository provides truth.
+- **Level 1 (Ultimate Truth)**: `SPEC.md`, `AI_CONSTITUTION.md`, `docs/architecture/INVARIANTS.md`.
+- **Level 2 (Personal Defaults)**: `.agents/defaults/preferences.yaml`, `docs/design/DESIGN_DEFAULTS.md`.
+- **Level 3 (Project Decisions)**: `docs/architecture/ARCHITECTURE.md`, `docs/architecture/ADR/`.
+- **Level 4 (Methodology & Workflow)**: `.agents/skills/` (external + local skills). An external skill must never override Level 1-3.
 
 ## Source of Truth
 - **Product & Requirements**: `SPEC.md`, `docs/product/`

@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "skills": {
+    "accessibility-inclusive-design": {
+      "source": "hueyexe/frontend-agent-skills",
+      "sourceType": "github",
+      "skillPath": "accessibility-inclusive-design/SKILL.md",
+      "computedHash": "9a8384c4aafbe0b8184e35273225a0b6ece8208182bbadd0daec9285d018fca4"
+    },
+    "debugger": {
+      "source": "aigis-solutions/agent-skills",
+      "sourceType": "github",
+      "skillPath": "debugger/SKILL.md",
+      "computedHash": "02a23c7395bc2f2c9b28f69580223f01ed8d23a17589cc25895fc177651489ec"
+    },
+    "define-evals": {
+      "source": "savitharaghunathan/eval-driven-development",
+      "sourceType": "github",
+      "skillPath": "define-evals/SKILL.md",
+      "computedHash": "236a11171de6c74c70d80e57e35930af1167c0226082d4948984d824556885d5"
+    },
+    "design-systems-frontend-architecture": {
+      "source": "hueyexe/frontend-agent-skills",
+      "sourceType": "github",
+      "skillPath": "design-systems-frontend-architecture/SKILL.md",
+      "computedHash": "2e1f63f5799073970e208c99637f290f23d1d3e8567ce52e117725bb32e34052"
+    },
+    "documentation-and-adrs": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/documentation-and-adrs/SKILL.md",
+      "computedHash": "f13054e8bd32a432df3e0e68240758cf61a9e8817aa8540f9d9831f427c47e0e"
+    },
+    "performance-optimization": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/performance-optimization/SKILL.md",
+      "computedHash": "f0a8e3bdb9b7d199434c2a5dd7cbb7d3cf69d802029cde1ef5daa07bffa27efc"
+    },
+    "planning-with-files": {
+      "source": "soucod/planning-with-files-skill",
+      "sourceType": "github",
+      "skillPath": "skills/planning-with-files/SKILL.md",
+      "computedHash": "a84ca05e41c0ad81e8b59829cbd09f51ee9a38f5e3b6b3328e415f5326a4eeb7"
+    },
+    "security-review": {
+      "source": "getsentry/skills",
+      "sourceType": "github",
+      "skillPath": "skills/security-review/SKILL.md",
+      "computedHash": "1eee1e41aa0a0e75dbbe0cac387e3d61bedf51af1888f184301a173731e6973e"
+    },
+    "system-design-first-principles": {
+      "source": "snepraj2709/system-design-first-principles-skill",
+      "sourceType": "github",
+      "skillPath": "skills/system-design-first-principles/SKILL.md",
+      "computedHash": "650d98f310a859ede523eee0c249c266135c9004f7cd83306a7cd8731340ff51"
+    },
+    "tailwind-css": {
+      "source": "PaulRBerg/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tailwind-css/SKILL.md",
+      "computedHash": "ac6b1958c54ab468c8db0c2292d790111b053f2a33ef9c06c7397eaa11e4b797"
+    },
+    "test-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/test-driven-development/SKILL.md",
+      "computedHash": "efb654aa37612ab1e7470e547b06a322c5e1837b6879525e32aa432d1281692b"
+    },
+    "ui-visual-composition": {
+      "source": "hueyexe/frontend-agent-skills",
+      "sourceType": "github",
+      "skillPath": "ui-visual-composition/SKILL.md",
+      "computedHash": "bfe56aeeef4c79967f72fa0615e1dbdf661df3200be428a7ca93a8436a08d107"
+    },
+    "ux-usability-foundations": {
+      "source": "hueyexe/frontend-agent-skills",
+      "sourceType": "github",
+      "skillPath": "ux-usability-foundations/SKILL.md",
+      "computedHash": "f8e0c25e860ad50486c0d460ea90c15ef2c5c29e0ebcac8a0a6749ecc2d5f833"
+    },
+    "ux-writing-content-design": {
+      "source": "hueyexe/frontend-agent-skills",
+      "sourceType": "github",
+      "skillPath": "ux-writing-content-design/SKILL.md",
+      "computedHash": "c234ec2703b5de05172d9e6964d93d14f3d61a0248e8e438aae66ee99d8e002a"
+    }
+  }
+}
