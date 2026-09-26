@@ -90,3 +90,17 @@ Before loading any file into context, ask:
 3. *Can a question be resolved with grep or symbol lookup instead of reading whole files?*
 
 If the answer is no, do not load the file.
+
+
+## 6. Context Index and Retrieval
+
+For repositories that need task-specific retrieval, use the local context layer:
+
+1. Run `npm run context:index` after project initialization or structural changes.
+2. Use `npm run context:build -- --task="..."` to build a bounded task context.
+3. Prefer cached item summaries and exact source pointers over full-file loading.
+4. Treat `.agents/context/index.json` and `items.json` as generated local cache, never as project truth.
+5. Source hashes determine when cached items are stale.
+6. Keep the context order deterministic and stop when the configured budget is reached.
+
+The retrieval layer must remain deterministic. Do not add embeddings or a vector database until keyword, symbol, path, and dependency retrieval has been shown insufficient.

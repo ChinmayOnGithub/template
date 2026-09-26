@@ -17,7 +17,9 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "context:index": "node .agents/scripts/context-index.mjs",
+    "context:build": "node .agents/scripts/context-build.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",
