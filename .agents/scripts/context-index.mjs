@@ -50,8 +50,10 @@ function hash(content) {
 function walk(dir, result = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
     if (entry.isDirectory()) {
+      const childPath = path.join(dir, entry.name);
+      if (path.resolve(childPath) === path.resolve(CONTEXT_DIR)) continue;
       if (!IGNORED_DIRS.has(entry.name)) {
-        walk(path.join(dir, entry.name), result);
+        walk(childPath, result);
       }
       continue;
     }
