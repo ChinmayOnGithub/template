@@ -104,7 +104,7 @@ function symbols(content) {
   }).sort((a, b) => a.line - b.line || a.name.localeCompare(b.name));
 }
 
-function build() {
+function classifyType(relativePath) {\n  if (/INVARIANTS\\.md$/i.test(relativePath)) return "invariant";\n  if (/\\bADR\\b|DECISIONS\\.md$/i.test(relativePath)) return "decision";\n  if (/\\.agents\\/skills\\//i.test(relativePath)) return "skill";\n  if (/\\.agents\\/memory\\//i.test(relativePath)) return "memory";\n  if (/ARCHITECTURE\\.md$/i.test(relativePath)) return "architecture";\n  return "file";\n}\n\nfunction build() {
   fs.mkdirSync(CONTEXT_DIR, { recursive: true });
   const files = walk(ROOT);
   const entries = [];
@@ -118,7 +118,7 @@ function build() {
     const dependencies = imports(content);
     const keywords = tokenize(`${relativePath} ${firstSummary(content, relativePath)} ${fileSymbols.map((s) => s.name).join(" ")}`);
 
-    entries.push({
+    const itemType = classifyType(relativePath);\n\n    entries.push({
       path: relativePath,
       bytes: Buffer.byteLength(content, "utf8"),
       lines: content.split(/\r?\n/).length,
