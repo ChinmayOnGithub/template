@@ -23,12 +23,14 @@ function arg(name, fallback = "") {
 
 function tokens(value) {
   const normalized = value.toLowerCase();
-  const parts = normalized
+  const originalTerms = normalized.split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3);
+  const splitTerms = value
     .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .toLowerCase()
     .split(/[^a-z0-9_$-]+/)
     .filter((item) => item.length >= 3);
 
-  return [...new Set([normalized, ...parts])];
+  return [...new Set([...originalTerms, ...splitTerms])];
 }
 
 function tokenCount(value) {
