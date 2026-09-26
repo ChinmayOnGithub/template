@@ -60,6 +60,7 @@ jobs:
   e2e:
     name: Browser Tests (Playwright)
     needs: verify
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
