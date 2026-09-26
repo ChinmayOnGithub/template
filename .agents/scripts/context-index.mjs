@@ -17,8 +17,15 @@ const OUTPUT = path.join(CONTEXT_DIR, "index.json");
 const CACHE_OUTPUT = path.join(CONTEXT_DIR, "items.json");
 
 const IGNORED_DIRS = new Set([
-  ".git", ".next", "node_modules", "dist", "build", "coverage",
-  ".turbo", ".cache", ".agents/context"
+  ".git",
+  ".next",
+  "node_modules",
+  "dist",
+  "build",
+  "coverage",
+  ".turbo",
+  ".cache",
+  "context"
 ]);
 
 const TEXT_EXTENSIONS = new Set([
@@ -44,13 +51,18 @@ function hash(content) {
 function walk(dir, result = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
     if (entry.isDirectory()) {
-      if (!IGNORED_DIRS.has(entry.name) && entry.name !== "context") walk(path.join(dir, entry.name), result);
+      if (!IGNORED_DIRS.has(entry.name)) {
+        walk(path.join(dir, entry.name), result);
+      }
       continue;
     }
+
     const full = path.join(dir, entry.name);
-    const ext = path.extname(entry.name).toLowerCase();
-    if (TEXT_EXTENSIONS.has(ext)) result.push(full);
+    if (TEXT_EXTENSIONS.has(path.extname(entry.name).toLowerCase())) {
+      result.push(full);
+    }
   }
+
   return result;
 }
 
@@ -67,9 +79,16 @@ function tokenize(value) {
 function firstSummary(content, relativePath) {
   const lines = content.split(/\r?\n/);
   const heading = lines.find((line) => /^\s*#{1,3}\s+/.test(line));
-  if (heading) return heading.replace(/^\s*#{1,3}\s+/, "").trim().slice(0, 180);
+
+  if (heading) {
+    return heading.replace(/^\s*#{1,3}\s+/, "").trim().slice(0, 180);
+  }
+
   const comment = lines.find((line) => /^\s*(?:\/\*|\*|\/\/|#)\s*[^/*#]/.test(line));
-  if (comment) return comment.replace(/^\s*(?:\/\*|\*|\/\/|#)\s*/, "").trim().slice(0, 180);
+  if (comment) {
+    return comment.replace(/^\s*(?:\/\*|\*|\/\/|#)\s*/, "").trim().slice(0, 180);
+  }
+
   return relativePath;
 }
 
@@ -80,14 +99,19 @@ function imports(content) {
     /\brequire\(\s*["']([^"']+)["']\s*\)/g,
     /\b(?:use|mod)\s+([A-Za-z0-9_:/.-]+)/g
   ];
+
   for (const pattern of patterns) {
-    for (const match of content.matchAll(pattern)) values.push(match[1]);
+    for (const match of content.matchAll(pattern)) {
+      values.push(match[1]);
+    }
   }
+
   return [...new Set(values)].sort();
 }
 
 function symbols(content) {
   const found = [];
+
   for (const pattern of SYMBOL_PATTERNS) {
     for (const match of content.matchAll(pattern)) {
       const index = match.index ?? 0;
@@ -95,17 +119,30 @@ function symbols(content) {
       found.push({ name: match[1], line });
     }
   }
+
   const seen = new Set();
-  return found.filter((item) => {
-    const key = `${item.name}:${item.line}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  }).sort((a, b) => a.line - b.line || a.name.localeCompare(b.name));
+  return found
+    .filter((item) => {
+      const key = `${item.name}:${item.line}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .sort((a, b) => a.line - b.line || a.name.localeCompare(b.name));
 }
 
-function classifyType(relativePath) {\n  if (/INVARIANTS\\.md$/i.test(relativePath)) return "invariant";\n  if (/\\bADR\\b|DECISIONS\\.md$/i.test(relativePath)) return "decision";\n  if (/\\.agents\\/skills\\//i.test(relativePath)) return "skill";\n  if (/\\.agents\\/memory\\//i.test(relativePath)) return "memory";\n  if (/ARCHITECTURE\\.md$/i.test(relativePath)) return "architecture";\n  return "file";\n}\n\nfunction build() {
+function classifyType(relativePath) {
+  if (/INVARIANTS\.md$/i.test(relativePath)) return "invariant";
+  if (/\bADR\b|DECISIONS\.md$/i.test(relativePath)) return "decision";
+  if (/\.agents\/skills\//i.test(relativePath)) return "skill";
+  if (/\.agents\/memory\//i.test(relativePath)) return "memory";
+  if (/ARCHITECTURE\.md$/i.test(relativePath)) return "architecture";
+  return "file";
+}
+
+function build() {
   fs.mkdirSync(CONTEXT_DIR, { recursive: true });
+
   const files = walk(ROOT);
   const entries = [];
   const items = [];
@@ -116,9 +153,12 @@ function classifyType(relativePath) {\n  if (/INVARIANTS\\.md$/i.test(relativePa
     const sourceHash = hash(content);
     const fileSymbols = symbols(content);
     const dependencies = imports(content);
-    const keywords = tokenize(`${relativePath} ${firstSummary(content, relativePath)} ${fileSymbols.map((s) => s.name).join(" ")}`);
+    const keywords = tokenize(
+      `${relativePath} ${firstSummary(content, relativePath)} ${fileSymbols.map((item) => item.name).join(" ")}`
+    );
+    const itemType = classifyType(relativePath);
 
-    const itemType = classifyType(relativePath);\n\n    entries.push({
+    entries.push({
       path: relativePath,
       bytes: Buffer.byteLength(content, "utf8"),
       lines: content.split(/\r?\n/).length,
@@ -129,14 +169,14 @@ function classifyType(relativePath) {\n  if (/INVARIANTS\\.md$/i.test(relativePa
     });
 
     items.push({
-      id: `file:${relativePath}`,
-      type: "file",
+      id: `${itemType}:${relativePath}`,
+      type: itemType,
       source: relativePath,
       summary: firstSummary(content, relativePath),
       keywords,
       symbols: fileSymbols.map((item) => item.name),
       relations: { dependsOn: dependencies },
-      stability: "stable",
+      stability: itemType === "memory" ? "volatile" : "stable",
       sourceHash
     });
 
@@ -148,7 +188,7 @@ function classifyType(relativePath) {\n  if (/INVARIANTS\\.md$/i.test(relativePa
         summary: `${symbol.name} declared in ${relativePath}`,
         keywords: tokenize(`${relativePath} ${symbol.name}`),
         symbols: [symbol.name],
-        relations: { relatedTo: [`file:${relativePath}`] },
+        relations: { relatedTo: [`${itemType}:${relativePath}`] },
         stability: "stable",
         sourceHash
       });
@@ -157,7 +197,6 @@ function classifyType(relativePath) {\n  if (/INVARIANTS\\.md$/i.test(relativePa
 
   const index = {
     version: 1,
-    generatedAt: new Date().toISOString(),
     root: ".",
     files: entries
   };
