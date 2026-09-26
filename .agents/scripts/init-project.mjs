@@ -130,7 +130,7 @@ function run() {
     copyDefaultAssets();
   }
 
-  console.log("[INIT] Initialization completed successfully.");
+  // Build the local context index after project structure and defaults are finalized.\n  const { execFileSync } = await import("node:child_process");\n  try {\n    execFileSync(process.execPath, [path.join(__dirname, "context-index.mjs")], { cwd: ROOT, stdio: "inherit" });\n  } catch {\n    console.warn("[CONTEXT] Index generation failed. Run npm run context:index manually.");\n  }\n\n  console.log("[INIT] Initialization completed successfully.");
   console.log("[NEXT STEPS]");
   console.log("1. Review SPEC.md and docs/product/PRODUCT_BRIEF.md");
   console.log("2. Record technical choices in docs/engineering/TECH_STACK.md");
