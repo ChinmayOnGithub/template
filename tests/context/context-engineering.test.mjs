@@ -9,8 +9,9 @@ import crypto from "node:crypto";
 
 function tokenize(value) {
   const normalized = value.toLowerCase();
-  const parts = normalized.split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3);
-  return [...new Set([normalized, ...parts])];
+  const originalTerms = normalized.split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3);
+  const splitTerms = value.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase().split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3);
+  return [...new Set([...originalTerms, ...splitTerms])];
 }
 
 function tokenCount(value) {
@@ -32,7 +33,7 @@ function score(item, queryTokens) {
 
 describe("context retrieval", () => {
   it("normalizes task terms deterministically", () => {
-    expect(tokenize("AuthService createUser")).toEqual(["authservice createuser", "authservice", "createuser"]);
+    expect(tokenize("AuthService createUser")).toEqual(["authservice", "createuser", "auth", "service", "create", "user"]);
     expect(tokenize("database, API, auth")).toEqual(["database", "api", "auth"]);
   });
 
