@@ -68,13 +68,15 @@ function walk(dir, result = []) {
 }
 
 function tokenize(value) {
-  return [...new Set(
-    value
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      .toLowerCase()
-      .split(/[^a-z0-9_$-]+/)
-      .filter((token) => token.length >= 3)
-  )];
+  const normalized = value.toLowerCase();
+  const originalTerms = normalized.split(/[^a-z0-9_$-]+/).filter((token) => token.length >= 3);
+  const splitTerms = value
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .toLowerCase()
+    .split(/[^a-z0-9_$-]+/)
+    .filter((token) => token.length >= 3);
+
+  return [...new Set([...originalTerms, ...splitTerms])];
 }
 
 function firstSummary(content, relativePath) {
