@@ -1,6 +1,6 @@
 /*
  * page.tsx
- * Authenticated user dashboard starter layout compliant with the Genesis design system.
+ * Authenticated user dashboard starter layout compliant with the design system.
  * Shows active session profile, foundation shortcuts, and user settings navigation.
  */
 
@@ -44,7 +44,7 @@ export default function DashboardPage() {
               href="/"
               className="font-display text-xl font-bold tracking-tight text-[var(--text-primary)] hover:text-[var(--primary)] transition-colors"
             >
-              Genesis
+              Template
             </Link>
             <span className="text-[var(--neutral-muted)]">/</span>
             <span className="font-display text-base font-semibold text-[var(--text-secondary)]">

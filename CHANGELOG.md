@@ -24,7 +24,7 @@ The format is based on Keep a Changelog, and this project adheres to Semantic Ve
 - Integration Endpoints (`app/api/integration/v1/`): Manifest, health, capabilities, and signed inbound event endpoints.
 - Design System Layouts: Reusable starter layouts in `design-system/layouts/` (`AppShell`, `SettingsLayout`, `DataTable`).
 - Minimal Dashboard UI: Clean, responsive landing dashboard on `app/page.tsx` showing active foundation capabilities and integration endpoints.
-- Genesis Design System & Theme Engine: Light and dark mode support with persistent ThemeToggle, refined typography with General Sans, DM Sans, and JetBrains Mono, and gallery-frame surface ladder.
+- Template Design System & Theme Engine: Light and dark mode support with persistent ThemeToggle, refined typography with General Sans, DM Sans, and JetBrains Mono, and gallery-frame surface ladder.
 - Interactive Diagnostics & Showcase UI: Live subsystem verification dashboard, executive KPI overview cards, MRR trend visualization, and component specimen matrix on home and dashboard routes.
 - Unit and integration test suites: 111 Vitest tests across 16 suites covering all capabilities, security rules, profile fixtures, and SaaS integration contracts.
 - End-to-end browser smoke test: Isolated Playwright suite in `tests/e2e/smoke.spec.ts` executing on dedicated port 3005.

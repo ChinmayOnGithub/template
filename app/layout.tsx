@@ -1,7 +1,7 @@
 /*
  * layout.tsx
  * Root layout component for the Next.js App Router application.
- * Establishes HTML shell, metadata, Genesis typography links, and global stylesheets.
+ * Establishes HTML shell, metadata, typography, and global stylesheets.
  */
 
 import type { Metadata } from "next";

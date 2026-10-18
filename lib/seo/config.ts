@@ -13,7 +13,7 @@ export const siteConfig = {
     "A framework-first, production-oriented starter kit for small web applications, developer tools, and scalable SaaS foundations.",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   locale: "en_US",
-  author: "Engineering Team",
+  author: "Chinmay",
 };
 
 export function constructMetadata({

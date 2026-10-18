@@ -11,7 +11,13 @@ test.describe("Landing Page Smoke Test", () => {
     await page.goto("/");
     const heading = page.locator("h1");
     await expect(heading).toBeVisible();
-    await expect(heading).toContainText("Welcome back, Chinmay.");
+    await expect(heading).toContainText("Site Status & System Verification");
+
+    // Switch to Design.md tab and verify showcase
+    const designTab = page.getByRole("tab", { name: /design/i });
+    await expect(designTab).toBeVisible();
+    await designTab.click();
+    await expect(page.locator("text=Welcome back, Chinmay.")).toBeVisible();
   });
 
   test("renders health status endpoint", async ({ request }) => {

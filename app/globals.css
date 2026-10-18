@@ -1,6 +1,6 @@
 /*
  * globals.css
- * Global stylesheet loading Genesis design tokens, typography, and utility classes.
+ * Global stylesheet loading design tokens, typography, and utility classes.
  * Applies editorial font rules, baseline reset, and interactive dot grid aesthetics.
  */
 
@@ -44,7 +44,7 @@ samp {
   font-family: var(--font-code);
 }
 
-/* Focus styles matching Genesis */
+/* Focus styles matching design system */
 :focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--focus-ring);

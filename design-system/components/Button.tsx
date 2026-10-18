@@ -1,6 +1,6 @@
 /*
  * Button.tsx
- * Renders standard accessible interactive buttons compliant with the Genesis design system.
+ * Renders standard accessible interactive buttons compliant with the design system.
  * Enforces 6px radius, hover lift with indigo glow, and standard 32/38/44px heights.
  */
 
@@ -41,7 +41,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyle =
       "inline-flex items-center justify-center font-medium rounded-[var(--button-radius)] transition-all duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none";
 
-    // Genesis token-based variants
+    // Design system token-based variants
     const variants: Record<ButtonVariant, string> = {
       primary:
         "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] hover:-translate-y-[1px] hover:shadow-[var(--button-glow)] active:translate-y-0",
@@ -59,7 +59,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       link: "bg-transparent text-[var(--primary)] underline-offset-4 hover:underline p-0 h-auto font-normal",
     };
 
-    // Genesis size scale: Small (32px), Medium (38px), Large (44px)
+    // Design system size scale: Small (32px), Medium (38px), Large (44px)
     const sizes: Record<ButtonSize, string> = {
       sm: "h-8 px-3 text-xs gap-1.5",
       md: "h-[38px] px-4 text-sm gap-2",

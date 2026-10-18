@@ -1,6 +1,6 @@
 /*
  * Input.tsx
- * Renders form inputs, textareas, and select menus compliant with the Genesis design system.
+ * Renders form inputs, textareas, and select menus compliant with the design system.
  * Enforces 6px radius, 10x14px padding, indigo focus ring, and recessive hairline borders.
  */
 

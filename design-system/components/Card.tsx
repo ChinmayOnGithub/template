@@ -1,6 +1,6 @@
 /*
  * Card.tsx
- * Renders gallery-frame card surfaces compliant with the Genesis design system.
+ * Renders gallery-frame card surfaces compliant with the design system.
  * Enforces 12px radius, 1px subtle hairline border, and -2px hover lift with soft shadow.
  */
 

@@ -1,6 +1,6 @@
 /*
  * Badge.tsx
- * Renders status badges, category chips, and priority pills compliant with the Genesis design system.
+ * Renders status badges, category chips, and priority pills compliant with the design system.
  * Enforces rounded-full pill shape, 4x12px padding, and semantic color indicator tokens.
  */
 

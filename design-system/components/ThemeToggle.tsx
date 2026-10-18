@@ -1,6 +1,6 @@
 /*
  * ThemeToggle.tsx
- * Theme switcher component toggling between Genesis light and dark modes.
+ * Theme switcher component toggling between light and dark modes.
  * Persists theme state in localStorage and updates the root document element class.
  */
 
@@ -15,7 +15,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
   useEffect(() => {
     setMounted(true);
-    const stored = localStorage.getItem("genesis-theme") as "light" | "dark" | null;
+    const stored = (localStorage.getItem("template-theme") ||
+      localStorage.getItem("genesis-theme")) as "light" | "dark" | null;
     const initial =
       stored || (document.documentElement.classList.contains("dark") ? "dark" : "light");
     setTheme(initial);
@@ -28,7 +29,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 
   const toggleTheme = (newTheme: "light" | "dark") => {
     setTheme(newTheme);
-    localStorage.setItem("genesis-theme", newTheme);
+    localStorage.setItem("template-theme", newTheme);
     if (newTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else {
