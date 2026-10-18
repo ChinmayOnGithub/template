@@ -32,10 +32,8 @@ jobs:
       - name: Verify file headers
         run: bun run check-headers
 
-      - name: Format changed security files for review
-        run: |
-          bunx prettier --write app/api/integration/v1/events/route.ts lib/billing/adapter.ts lib/saas-integration/auth.ts lib/saas-integration/client.ts tests/security-hardening.test.ts
-          git diff -- app/api/integration/v1/events/route.ts lib/billing/adapter.ts lib/saas-integration/auth.ts lib/saas-integration/client.ts tests/security-hardening.test.ts
+      - name: Check code formatting
+        run: bun run format:check
 
       - name: Run linter
         run: bun run lint
@@ -59,8 +57,6 @@ jobs:
 
       - name: Setup Bun runtime
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 1.3.14
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
