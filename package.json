@@ -8,6 +8,7 @@
     "validate-template": "node .agents/scripts/validate-template.mjs",
     "audit-context": "node .agents/scripts/audit-context.mjs",
     "check-headers": "node .agents/scripts/check-headers.mjs",
+    "doctor": "node .agents/scripts/doctor.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -266,8 +266,12 @@ Run verification commands from the project root:
 # Verify mandatory 3-line file headers across source files
 bun run check-headers
 
+# Run developer setup doctor (diagnoses env, database, auth, and packages)
+bun run doctor
+
 # Validate template integrity, skills, and structure
 bun run validate-template
+
 
 # Audit AI context size and token footprint
 bun run audit-context
