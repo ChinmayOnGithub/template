@@ -5,7 +5,7 @@
  */
 
 import crypto from "node:crypto";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { createBillingAdapter, MockBillingAdapter } from "../lib/billing/adapter";
 import {
   clearReplayCacheForTesting,
@@ -14,11 +14,10 @@ import {
 } from "../lib/saas-integration/auth";
 import { AdminPortalClient } from "../lib/saas-integration/client";
 
-const originalNodeEnv = process.env.NODE_ENV;
 const originalBillingProvider = process.env.BILLING_PROVIDER;
 
 afterEach(() => {
-  process.env.NODE_ENV = originalNodeEnv;
+  vi.unstubAllEnvs();
   if (originalBillingProvider === undefined) delete process.env.BILLING_PROVIDER;
   else process.env.BILLING_PROVIDER = originalBillingProvider;
   clearReplayCacheForTesting();
@@ -26,21 +25,21 @@ afterEach(() => {
 
 describe("production security configuration", () => {
   it("refuses to silently select a mock billing provider in production", () => {
-    process.env.NODE_ENV = "production";
+    vi.stubEnv("NODE_ENV", "production");
     delete process.env.BILLING_PROVIDER;
     expect(() => createBillingAdapter()).toThrow(/must be explicitly configured/);
   });
 
   it("does not accept the mock webhook signature in production", () => {
-    process.env.NODE_ENV = "production";
+    vi.stubEnv("NODE_ENV", "production");
     const adapter = new MockBillingAdapter();
-    expect(
-      adapter.verifyWebhookSignature("{}", "valid_test_signature", "configured-secret"),
-    ).toBe(false);
+    expect(adapter.verifyWebhookSignature("{}", "valid_test_signature", "configured-secret")).toBe(
+      false,
+    );
   });
 
   it("requires HTTPS for the Admin Portal client in production", () => {
-    process.env.NODE_ENV = "production";
+    vi.stubEnv("NODE_ENV", "production");
     expect(
       () =>
         new AdminPortalClient({
