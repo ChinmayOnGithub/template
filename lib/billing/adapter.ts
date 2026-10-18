@@ -72,7 +72,8 @@ export class RazorpayBillingAdapter implements BillingProvider {
     const expectedBuffer = Buffer.from(expectedSignature, "hex");
 
     return (
-      sigBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(sigBuffer, expectedBuffer)
+      sigBuffer.length === expectedBuffer.length &&
+      crypto.timingSafeEqual(sigBuffer, expectedBuffer)
     );
   }
 }
