@@ -41,7 +41,9 @@ export class RazorpayBillingAdapter implements BillingProvider {
 
     // This adapter currently supplies deterministic reference IDs only. Replace with the
     // provider API integration before enabling live customer/subscription operations.
-    return { customerId: `cust_rzp_${Buffer.from(email).toString("hex").slice(0, 12)}` };
+    return {
+      customerId: `cust_rzp_${Buffer.from(email).toString("hex").slice(0, 12)}`,
+    };
   }
 
   async createSubscription(customerId: string, planId: string): Promise<SubscriptionResult> {
@@ -69,7 +71,9 @@ export class RazorpayBillingAdapter implements BillingProvider {
     const sigBuffer = Buffer.from(signature, "hex");
     const expectedBuffer = Buffer.from(expectedSignature, "hex");
 
-    return sigBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(sigBuffer, expectedBuffer);
+    return (
+      sigBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(sigBuffer, expectedBuffer)
+    );
   }
 }
 
@@ -88,9 +92,11 @@ export class MockBillingAdapter implements BillingProvider {
 
   verifyWebhookSignature(rawBody: string, signature: string, secret: string): boolean {
     // A test adapter must never be a production authentication mechanism.
-    return process.env.NODE_ENV !== "production" &&
+    return (
+      process.env.NODE_ENV !== "production" &&
       Boolean(rawBody && secret) &&
-      signature === "valid_test_signature";
+      signature === "valid_test_signature"
+    );
   }
 }
 
