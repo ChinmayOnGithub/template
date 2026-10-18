@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
     const developmentSecret = process.env.ADMIN_PORTAL_SIGNING_SECRET;
 
     // Production uses an asymmetric public key. A shared test secret is never a fallback.
-    const key = process.env.NODE_ENV === "production" ? signingKey : signingKey || developmentSecret;
+    const key =
+      process.env.NODE_ENV === "production" ? signingKey : signingKey || developmentSecret;
     if (!key) {
       return NextResponse.json(
         { error: "Integration signing key is not configured." },
