@@ -62,7 +62,10 @@ export class AdminPortalClient {
     const isLocalHttp =
       parsedUrl.protocol === "http:" &&
       ["localhost", "127.0.0.1", "::1"].includes(parsedUrl.hostname);
-    if (parsedUrl.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && isLocalHttp)) {
+    if (
+      parsedUrl.protocol !== "https:" &&
+      !(process.env.NODE_ENV !== "production" && isLocalHttp)
+    ) {
       throw new Error("AdminPortalClient requires HTTPS outside local development");
     }
     if (parsedUrl.username || parsedUrl.password) {
@@ -170,9 +173,14 @@ export class AdminPortalClient {
 
   public async registerOrHandshake(manifest: ProductManifest): Promise<HandshakeResponse> {
     const validated = validateProductManifest(manifest);
-    return this.requestWithRetry<HandshakeResponse>("/api/v1/products/handshake", "POST", validated, {
-      idempotencyKey: `handshake_${validated.productId}_${validated.version}`,
-    });
+    return this.requestWithRetry<HandshakeResponse>(
+      "/api/v1/products/handshake",
+      "POST",
+      validated,
+      {
+        idempotencyKey: `handshake_${validated.productId}_${validated.version}`,
+      },
+    );
   }
 
   public async submitEvents(events: ProductEvent[]): Promise<{ acceptedCount: number }> {
@@ -191,9 +199,10 @@ export class AdminPortalClient {
     return validateEntitlementSnapshot(raw);
   }
 
-  public async reportHealth(
-    status: { liveness: boolean; readiness: boolean },
-  ): Promise<{ received: boolean }> {
+  public async reportHealth(status: {
+    liveness: boolean;
+    readiness: boolean;
+  }): Promise<{ received: boolean }> {
     return this.requestWithRetry<{ received: boolean }>("/api/v1/health/report", "POST", status);
   }
 }
