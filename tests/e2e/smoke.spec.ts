@@ -11,7 +11,7 @@ test.describe("Landing Page Smoke Test", () => {
     await page.goto("/");
     const heading = page.locator("h1");
     await expect(heading).toBeVisible();
-    await expect(heading).toContainText("Reusable SaaS Starter Kit");
+    await expect(heading).toContainText("Welcome back, Chinmay.");
   });
 
   test("renders health status endpoint", async ({ request }) => {

@@ -1,7 +1,7 @@
 /*
  * Card.tsx
- * Renders structured card containers with header, body, and footer.
- * Standardizes surface elevations and hairline borders across views.
+ * Renders gallery-frame card surfaces compliant with the Genesis design system.
+ * Enforces 12px radius, 1px subtle hairline border, and -2px hover lift with soft shadow.
  */
 
 import React from "react";
@@ -20,24 +20,23 @@ export const Card: React.FC<CardProps> = ({
 }) => {
   const baseStyle = [
     "flex flex-col",
-    "bg-[var(--color-bg-surface)]",
-    "border border-[var(--color-border)]",
-    `rounded-[var(--card-radius)]`,
-    `shadow-[var(--card-shadow)]`,
-    `transition-[var(--card-transition)]`,
-    "overflow-hidden", // Prevent content from breaking rounded corners
+    "bg-[var(--surface)]",
+    "border border-[var(--border)]",
+    "rounded-[var(--card-radius)]",
+    "overflow-hidden",
+    "transition-all duration-200 ease-out",
   ].join(" ");
 
   const hoverStyle = interactive
     ? [
+        "hover:-translate-y-0.5",
         "hover:shadow-[var(--card-hover-shadow)]",
-        "hover:border-[var(--color-primary)]",
+        "hover:border-[var(--border-strong)]",
         "cursor-pointer",
-        "active:scale-[0.995]",
       ].join(" ")
     : "";
 
-  const paddingStyle = compact ? `p-[var(--spacing-3)]` : `p-[var(--card-padding)]`;
+  const paddingStyle = compact ? "p-3 sm:p-4" : "p-4 sm:p-6";
 
   return (
     <div className={`${baseStyle} ${paddingStyle} ${hoverStyle} ${className}`} {...props}>
@@ -53,7 +52,7 @@ export const CardHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 }) => {
   return (
     <div
-      className={`pb-[var(--card-header-spacing)] mb-[var(--card-header-spacing)] border-b border-[var(--color-border)] flex items-center justify-between gap-4 ${className}`}
+      className={`pb-3 mb-3 border-b border-[var(--border)] flex items-center justify-between gap-4 ${className}`}
       {...props}
     >
       {children}
@@ -80,7 +79,7 @@ export const CardFooter: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 }) => {
   return (
     <div
-      className={`pt-[var(--card-header-spacing)] mt-[var(--card-header-spacing)] border-t border-[var(--color-border)] flex items-center gap-3 ${className}`}
+      className={`pt-3 mt-3 border-t border-[var(--border)] flex items-center gap-3 ${className}`}
       {...props}
     >
       {children}

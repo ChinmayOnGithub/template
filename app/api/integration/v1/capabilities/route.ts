@@ -5,7 +5,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { INTEGRATION_API_VERSION, type IntegrationCapability } from "@/lib/saas-integration/types";
+import { INTEGRATION_API_VERSION, type IntegrationCapability } from "@/features/integrations/types";
 
 export const dynamic = "force-dynamic";
 

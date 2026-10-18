@@ -5,9 +5,9 @@
  */
 
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth/better-auth";
-import { db, isDatabaseConfigured } from "@/lib/db";
-import { getMockEmailProvider } from "@/lib/email";
+import { auth } from "@/features/auth/better-auth";
+import { db, isDatabaseConfigured } from "@/server/db";
+import { getMockEmailProvider } from "@/server/email";
 
 export const dynamic = "force-dynamic";
 

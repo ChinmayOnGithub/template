@@ -6,7 +6,7 @@
 
 import { NextRequest } from "next/server";
 import { apiError, apiSuccess } from "@/lib/api";
-import { createBillingAdapter, processBillingWebhook } from "@/lib/billing";
+import { createBillingAdapter, processBillingWebhook } from "@/features/billing";
 
 export const dynamic = "force-dynamic";
 

@@ -5,7 +5,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { createDefaultManifest } from "@/lib/saas-integration/contract";
+import { createDefaultManifest } from "@/features/integrations/contract";
 
 export const dynamic = "force-dynamic";
 

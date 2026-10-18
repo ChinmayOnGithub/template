@@ -9,7 +9,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signUp } from "@/lib/auth/auth-client";
+import { signUp } from "@/features/auth/auth-client";
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
 import { FormField, FormLabel, FormControl } from "@/design-system/components/FormField";
@@ -83,7 +83,7 @@ export default function SignUpPage() {
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Alex Morgan"
+                    placeholder="Chinmay"
                   />
                 </FormControl>
               </FormField>

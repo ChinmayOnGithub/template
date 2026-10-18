@@ -5,7 +5,7 @@
  */
 
 import { apiError, apiSuccess } from "@/lib/api";
-import { db, isDatabaseConfigured } from "@/lib/db";
+import { db, isDatabaseConfigured } from "@/server/db";
 
 export const dynamic = "force-dynamic";
 

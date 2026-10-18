@@ -44,6 +44,7 @@ export type { DropdownItem, DropdownSeparator, DropdownOption } from "./componen
 export { Tabs, TabsList, Tab, TabsContent } from "./components/Tabs";
 export { ToastProvider, useToast } from "./components/Toast";
 export type { ToastVariant, ToastItem } from "./components/Toast";
+export { ThemeToggle } from "./components/ThemeToggle";
 
 // Radix Primitives
 export * from "./components/Dialog";

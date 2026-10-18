@@ -5,9 +5,9 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { verifyPortalSignature } from "@/lib/saas-integration/auth";
+import { verifyPortalSignature } from "@/features/integrations/auth";
 import { logger } from "@/lib/observability/logger";
-import { db } from "@/lib/db";
+import { db } from "@/server/db";
 import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";

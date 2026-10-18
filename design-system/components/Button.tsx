@@ -1,7 +1,7 @@
 /*
  * Button.tsx
- * Renders standard accessible interactive buttons with variants and sizes.
- * Enforces uniform button styling and eliminates raw HTML buttons.
+ * Renders standard accessible interactive buttons compliant with the Genesis design system.
+ * Enforces 6px radius, hover lift with indigo glow, and standard 32/38/44px heights.
  */
 
 import React from "react";
@@ -39,33 +39,33 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const isLoadingState = isLoading || loading;
     const baseStyle =
-      "inline-flex items-center justify-center font-medium transition-all duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none";
+      "inline-flex items-center justify-center font-medium rounded-[var(--button-radius)] transition-all duration-150 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none";
 
-    // Semantic token-based variants
+    // Genesis token-based variants
     const variants: Record<ButtonVariant, string> = {
       primary:
-        "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] shadow-xs active:scale-[0.98]",
+        "bg-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[var(--primary-hover)] hover:-translate-y-[1px] hover:shadow-[var(--button-glow)] active:translate-y-0",
       secondary:
-        "bg-[var(--secondary)] text-[var(--secondary-foreground)] hover:bg-[var(--secondary-hover)] border border-[var(--border-subtle)] shadow-xs active:scale-[0.98]",
+        "bg-transparent text-[var(--text-primary)] border border-[var(--border)] hover:bg-[var(--surface-muted)] hover:border-[var(--border-strong)] active:scale-[0.99]",
       outline:
-        "border border-[var(--border)] bg-transparent text-[var(--foreground)] hover:bg-[var(--accent)] shadow-xs active:scale-[0.98]",
+        "bg-transparent text-[var(--text-primary)] border border-[var(--border)] hover:bg-[var(--accent)] active:scale-[0.99]",
       destructive:
-        "bg-[var(--destructive)] text-white hover:bg-[var(--destructive-hover)] shadow-xs active:scale-[0.98]",
+        "bg-transparent text-[var(--destructive)] border border-[var(--destructive)]/40 hover:bg-[var(--destructive)]/10 hover:border-[var(--destructive)] active:scale-[0.99]",
       danger:
-        "bg-[var(--destructive)] text-white hover:bg-[var(--destructive-hover)] shadow-xs active:scale-[0.98]",
+        "bg-transparent text-[var(--destructive)] border border-[var(--destructive)]/40 hover:bg-[var(--destructive)]/10 hover:border-[var(--destructive)] active:scale-[0.99]",
       ghost:
-        "bg-transparent text-[var(--muted-foreground)] hover:bg-[var(--accent)] hover:text-[var(--foreground)] active:scale-[0.98]",
-      warning: "bg-[var(--warning)] text-white hover:opacity-90 shadow-xs active:scale-[0.98]",
+        "bg-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--accent)] active:scale-[0.99]",
+      warning: "bg-[var(--warning)] text-white hover:opacity-90 active:scale-[0.99]",
       link: "bg-transparent text-[var(--primary)] underline-offset-4 hover:underline p-0 h-auto font-normal",
     };
 
-    // Normalized size scale
+    // Genesis size scale: Small (32px), Medium (38px), Large (44px)
     const sizes: Record<ButtonSize, string> = {
-      sm: "h-8 px-3 py-1 text-xs rounded-[var(--radius-sm)] gap-1.5",
-      md: "h-9 px-4 py-2 text-sm rounded-[var(--radius-md)] gap-2",
-      lg: "h-10 px-5 py-2.5 text-base rounded-[var(--radius-lg)] gap-2.5",
-      icon: "h-8 w-8 p-1.5 rounded-[var(--radius-md)] shrink-0",
-      "icon-sm": "h-8 w-8 p-1.5 rounded-[var(--radius-md)] shrink-0",
+      sm: "h-8 px-3 text-xs gap-1.5",
+      md: "h-[38px] px-4 text-sm gap-2",
+      lg: "h-11 px-5 text-[15px] gap-2.5",
+      icon: "h-8 w-8 p-1.5 shrink-0",
+      "icon-sm": "h-8 w-8 p-1.5 shrink-0",
     };
 
     const Comp = asChild ? Slot : "button";

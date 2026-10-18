@@ -9,7 +9,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { authClient } from "@/lib/auth/auth-client";
+import { authClient } from "@/features/auth/auth-client";
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
 import { FormField, FormLabel, FormControl } from "@/design-system/components/FormField";
