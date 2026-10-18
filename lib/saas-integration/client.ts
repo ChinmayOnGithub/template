@@ -37,6 +37,32 @@ export class IntegrationError extends Error {
   }
 }
 
+export function validatePortalBaseUrl(
+  baseUrl: string,
+  environment = process.env.NODE_ENV,
+): URL {
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(baseUrl);
+  } catch {
+    throw new Error("AdminPortalClient baseUrl must be a valid absolute URL");
+  }
+
+  const isLocalHttp =
+    parsedUrl.protocol === "http:" &&
+    ["localhost", "127.0.0.1", "::1"].includes(parsedUrl.hostname);
+  if (
+    parsedUrl.protocol !== "https:" &&
+    !(environment !== "production" && isLocalHttp)
+  ) {
+    throw new Error("AdminPortalClient requires HTTPS outside local development");
+  }
+  if (parsedUrl.username || parsedUrl.password) {
+    throw new Error("AdminPortalClient baseUrl must not contain URL credentials");
+  }
+  return parsedUrl;
+}
+
 export class AdminPortalClient {
   private baseUrl: string;
   private clientId: string;
@@ -52,26 +78,7 @@ export class AdminPortalClient {
       );
     }
 
-    let parsedUrl: URL;
-    try {
-      parsedUrl = new URL(config.baseUrl);
-    } catch {
-      throw new Error("AdminPortalClient baseUrl must be a valid absolute URL");
-    }
-
-    const isLocalHttp =
-      parsedUrl.protocol === "http:" &&
-      ["localhost", "127.0.0.1", "::1"].includes(parsedUrl.hostname);
-    if (
-      parsedUrl.protocol !== "https:" &&
-      !(process.env.NODE_ENV !== "production" && isLocalHttp)
-    ) {
-      throw new Error("AdminPortalClient requires HTTPS outside local development");
-    }
-    if (parsedUrl.username || parsedUrl.password) {
-      throw new Error("AdminPortalClient baseUrl must not contain URL credentials");
-    }
-
+    const parsedUrl = validatePortalBaseUrl(config.baseUrl);
     this.baseUrl = parsedUrl.toString().replace(/\/+$/, "");
     this.clientId = config.clientId;
     this.clientSecret = config.clientSecret;
