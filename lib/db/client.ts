@@ -13,6 +13,12 @@ export interface DbConfig {
 // this abstraction provides a safe connection contract without crashing TypeScript compilation.
 export interface TransactionClient {
   user: unknown;
+  session: unknown;
+  account: unknown;
+  verificationToken: unknown;
+  passwordResetToken: unknown;
+  organization: unknown;
+  organizationMember: unknown;
   subscription: unknown;
   auditLog: unknown;
   webhookEvent: unknown;
@@ -40,6 +46,12 @@ export function createDatabaseClient(config: DbConfig = {}): DatabaseClient {
     $transaction: async <T>(fn: (tx: TransactionClient) => Promise<T>): Promise<T> => {
       const mockTx: TransactionClient = {
         user: {},
+        session: {},
+        account: {},
+        verificationToken: {},
+        passwordResetToken: {},
+        organization: {},
+        organizationMember: {},
         subscription: {},
         auditLog: {},
         webhookEvent: {},

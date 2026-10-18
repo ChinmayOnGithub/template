@@ -6,12 +6,10 @@
 
 import type { Metadata } from "next";
 import "./globals.css";
+import { constructMetadata } from "@/lib/seo/config";
+import { CookieBanner } from "@/design-system/components/CookieBanner";
 
-export const metadata: Metadata = {
-  title: "Universal AI Project Template",
-  description:
-    "Universal AI-first software project bootstrap template with strong personal defaults",
-};
+export const metadata: Metadata = constructMetadata();
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -21,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-[var(--background)] text-[var(--foreground)] antialiased">
         {children}
+        <CookieBanner />
       </body>
     </html>
   );

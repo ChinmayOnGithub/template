@@ -290,3 +290,21 @@ bun run test:e2e
 # Run production build
 bun run build
 ```
+
+---
+
+## 7. Framework-First SaaS Starter Kit
+
+This repository includes a production-oriented starter pack for small websites, developer tools, and scalable SaaS applications:
+
+- **Authentication & Sessions**: Integrated [Better Auth](https://better-auth.com) mounted at `/api/auth/[...all]` with typed browser client (`useSession`, `signIn`, `signUp`, `signOut`), password reset workflows, and session token rotation.
+- **Database Schema**: Unified [Prisma schema](file:///d:/github_projeccts/template/prisma/schema.prisma) mapping directly to Better Auth tables (`user`, `session`, `account`, `verification`) plus multi-tenant organizations, subscriptions, audit logs, and webhooks.
+- **Starter Pages**:
+  - `/login`: Accessible credentials sign-in with client-side validation
+  - `/signup`: New user registration with automatic session issuance
+  - `/forgot-password` & `/reset-password`: Token-gated password recovery
+  - `/dashboard`: Protected workspace dashboard with session profile and quick links
+  - `/settings/profile`: Name updating, role display, and password rotation
+- **SEO Infrastructure**: Next.js native `app/robots.ts`, dynamic `app/sitemap.ts`, canonical HTTPS URL generator, Open Graph tags, and structured metadata helpers.
+- **Privacy & Cookie Consent**: Zero-tracking consent gate (`CookieBanner`), category preference dialog (Necessary, Analytics, Marketing), and customizable legal page scaffolding (`/privacy`, `/terms`, `/cookies`).
+- **Transactional Email**: Typed provider interface (`sendEmail`, `sendVerificationEmail`, `sendPasswordResetEmail`) backed by a zero-leak development test sink.
