@@ -24,14 +24,36 @@ const IGNORED_DIRS = new Set([
   "build",
   "coverage",
   ".turbo",
-  ".cache"
+  ".cache",
 ]);
 
 const TEXT_EXTENSIONS = new Set([
-  ".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".json", ".md",
-  ".mdx", ".yaml", ".yml", ".toml", ".css", ".scss", ".html",
-  ".rs", ".go", ".java", ".kt", ".cpp", ".cc", ".c", ".h", ".hpp",
-  ".py", ".sh"
+  ".ts",
+  ".tsx",
+  ".js",
+  ".jsx",
+  ".mjs",
+  ".cjs",
+  ".json",
+  ".md",
+  ".mdx",
+  ".yaml",
+  ".yml",
+  ".toml",
+  ".css",
+  ".scss",
+  ".html",
+  ".rs",
+  ".go",
+  ".java",
+  ".kt",
+  ".cpp",
+  ".cc",
+  ".c",
+  ".h",
+  ".hpp",
+  ".py",
+  ".sh",
 ]);
 
 const SYMBOL_PATTERNS = [
@@ -40,7 +62,7 @@ const SYMBOL_PATTERNS = [
   /\b(?:export\s+)?interface\s+([A-Za-z_$][\w$]*)/g,
   /\b(?:export\s+)?type\s+([A-Za-z_$][\w$]*)/g,
   /\b(?:export\s+)?enum\s+([A-Za-z_$][\w$]*)/g,
-  /\b(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)/g
+  /\b(?:export\s+)?(?:const|let|var)\s+([A-Za-z_$][\w$]*)/g,
 ];
 
 function hash(content) {
@@ -48,7 +70,9 @@ function hash(content) {
 }
 
 function walk(dir, result = []) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+  for (const entry of fs
+    .readdirSync(dir, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name))) {
     if (entry.isDirectory()) {
       const childPath = path.join(dir, entry.name);
       if (path.resolve(childPath) === path.resolve(CONTEXT_DIR)) continue;
@@ -84,12 +108,18 @@ function firstSummary(content, relativePath) {
   const heading = lines.find((line) => /^\s*#{1,3}\s+/.test(line));
 
   if (heading) {
-    return heading.replace(/^\s*#{1,3}\s+/, "").trim().slice(0, 180);
+    return heading
+      .replace(/^\s*#{1,3}\s+/, "")
+      .trim()
+      .slice(0, 180);
   }
 
   const comment = lines.find((line) => /^\s*(?:\/\*|\*|\/\/|#)\s*[^/*#]/.test(line));
   if (comment) {
-    return comment.replace(/^\s*(?:\/\*|\*|\/\/|#)\s*/, "").trim().slice(0, 180);
+    return comment
+      .replace(/^\s*(?:\/\*|\*|\/\/|#)\s*/, "")
+      .trim()
+      .slice(0, 180);
   }
 
   return relativePath;
@@ -101,7 +131,7 @@ function imports(content, parseCode) {
   const patterns = [
     /\bimport\s+(?:[^"'\n]+?\s+from\s+)?["']([^"']+)["']/g,
     /\brequire\(\s*["']([^"']+)["']\s*\)/g,
-    /\b(?:use|mod)\s+([A-Za-z0-9_:/.-]+)/g
+    /\b(?:use|mod)\s+([A-Za-z0-9_:/.-]+)/g,
   ];
 
   for (const pattern of patterns) {
@@ -156,11 +186,29 @@ function build() {
     const relativePath = path.relative(ROOT, fullPath).replaceAll(path.sep, "/");
     const content = fs.readFileSync(fullPath, "utf8");
     const sourceHash = hash(content);
-    const parseCode = [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".rs", ".go", ".java", ".kt", ".cpp", ".cc", ".c", ".h", ".hpp", ".py", ".sh"].includes(path.extname(relativePath).toLowerCase());
+    const parseCode = [
+      ".ts",
+      ".tsx",
+      ".js",
+      ".jsx",
+      ".mjs",
+      ".cjs",
+      ".rs",
+      ".go",
+      ".java",
+      ".kt",
+      ".cpp",
+      ".cc",
+      ".c",
+      ".h",
+      ".hpp",
+      ".py",
+      ".sh",
+    ].includes(path.extname(relativePath).toLowerCase());
     const fileSymbols = symbols(content, parseCode);
     const dependencies = imports(content, parseCode);
     const keywords = tokenize(
-      `${relativePath} ${firstSummary(content, relativePath)} ${fileSymbols.map((item) => item.name).join(" ")}`
+      `${relativePath} ${firstSummary(content, relativePath)} ${fileSymbols.map((item) => item.name).join(" ")}`,
     );
     const itemType = classifyType(relativePath);
 
@@ -171,7 +219,7 @@ function build() {
       sourceHash,
       keywords,
       symbols: fileSymbols,
-      dependencies
+      dependencies,
     });
 
     items.push({
@@ -183,7 +231,7 @@ function build() {
       symbols: fileSymbols.map((item) => item.name),
       relations: { dependsOn: dependencies },
       stability: itemType === "memory" ? "volatile" : "stable",
-      sourceHash
+      sourceHash,
     });
 
     for (const symbol of fileSymbols) {
@@ -196,7 +244,7 @@ function build() {
         symbols: [symbol.name],
         relations: { relatedTo: [`${itemType}:${relativePath}`] },
         stability: "stable",
-        sourceHash
+        sourceHash,
       });
     }
   }
@@ -204,7 +252,7 @@ function build() {
   const index = {
     version: 1,
     root: ".",
-    files: entries
+    files: entries,
   };
 
   fs.writeFileSync(OUTPUT, JSON.stringify(index, null, 2) + "\n", "utf8");

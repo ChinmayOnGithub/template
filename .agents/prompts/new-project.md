@@ -17,7 +17,9 @@ The goal is to take the project from raw idea to implementation-ready state with
 ## 2. Step-by-Step Initialization Sequence
 
 ### Step 1: Project Identity and Category Classification
+
 Determine the project fundamentals:
+
 - **Project Name & Description**: One-line purpose.
 - **Problem & Target User**: Who experiences this pain, and what is the primary use case?
 - **Project Category**: Classify into one of:
@@ -30,7 +32,9 @@ Determine the project fundamentals:
   - `other` (Automation script, library, experiment)
 
 ### Step 2: Product and Business Foundation
+
 Populate the product documentation files:
+
 - Fill `SPEC.md` with product summary, capabilities, scope boundaries, and acceptance criteria.
 - Fill `docs/product/PRODUCT_BRIEF.md` (user, problem, unique angle).
 - Fill `docs/product/GOALS.md` (P0/P1/P2 priorities and measurable objectives).
@@ -38,12 +42,16 @@ Populate the product documentation files:
 - Fill `docs/product/USER_STORIES.md` and `docs/product/SUCCESS_METRICS.md`.
 
 ### Step 3: Technology Selection and Stack Definition
+
 Evaluate project constraints and choose technologies:
+
 - Record choices and rationale in `docs/engineering/TECH_STACK.md` (language, runtime, framework, database, ORM, auth, testing, deployment).
 - Update `.env.example` with project-specific environment variables.
 
 ### Step 4: Template Cleanup (Crucial)
+
 Do not leave unused template scaffolding in the project:
+
 - If project is **NOT a web application**:
   - Remove `design-system/` if not needed.
   - Remove Next.js / React configuration files (`eslint.config.mjs`, `next.config.ts`, etc.) if using another stack.
@@ -53,21 +61,25 @@ Do not leave unused template scaffolding in the project:
   - Apply personal design defaults from `.agents/defaults/preferences.yaml`.
 
 ### Step 5: Architecture and System Invariants
+
 - Establish system boundaries in `docs/architecture/ARCHITECTURE.md`.
 - Define system-wide non-negotiable rules in `docs/architecture/INVARIANTS.md`.
 - Initialize `docs/architecture/DECISIONS.md` with initial technology ADRs if significant tradeoffs exist.
 
 ### Step 6: Design Direction (For Projects with UI)
+
 - Check `.agents/defaults/preferences.yaml` and `docs/design/DESIGN_DEFAULTS.md`.
 - Copy or link default assets (`favicon.svg`, `app-icon.svg`) from `.agents/defaults/assets/`.
 - Complete `docs/design/DESIGN_BRIEF.md` with visual direction, typography, and interaction states.
 
 ### Step 7: Testing and Evals Harness
+
 - Establish testing strategy in `docs/engineering/TESTING.md`.
 - Create initial smoke tests or behavioral evaluations in `tests/evals/`.
 - Configure unit and browser test runners appropriate to the stack.
 
 ### Step 8: Project-Specific README Generation
+
 - Replace the template README with a clean, project-specific `README.md` containing:
   - Project summary & problem solved
   - Architecture and tech stack
@@ -77,7 +89,9 @@ Do not leave unused template scaffolding in the project:
   - Project structure overview
 
 ### Step 9: Verification Gate
+
 Run and verify baseline commands:
+
 ```bash
 bun run check-headers
 bun run typecheck
@@ -85,9 +99,11 @@ bun run lint
 bun run test
 bun run build
 ```
+
 Confirm all checks pass before declaring initialization complete.
 
 ---
 
 ## 3. Transition to Implementation
+
 Once the verification gate passes, report the established baseline and proceed directly to feature planning via `.agents/prompts/plan-feature.md` or begin coding.

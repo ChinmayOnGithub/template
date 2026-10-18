@@ -4,22 +4,22 @@
  * Provides responsive layout framework for the workspace.
  */
 
-'use client'
+"use client";
 
-import React from 'react'
-import { PageContainer } from './PageContainer'
-import { PageHeader } from './PageHeader'
-import { Skeleton } from './Skeleton'
+import React from "react";
+import { PageContainer } from "./PageContainer";
+import { PageHeader } from "./PageHeader";
+import { Skeleton } from "./Skeleton";
 
 interface PageShellProps {
-  title: string
-  subtitle?: string
-  actions?: React.ReactNode
-  prefix?: React.ReactNode
-  maxWidth?: 'default' | 'wide' | 'narrow'
-  isLoading?: boolean
-  error?: string | null
-  children: React.ReactNode
+  title: string;
+  subtitle?: string;
+  actions?: React.ReactNode;
+  prefix?: React.ReactNode;
+  maxWidth?: "default" | "wide" | "narrow";
+  isLoading?: boolean;
+  error?: string | null;
+  children: React.ReactNode;
 }
 
 export const PageShell: React.FC<PageShellProps> = ({
@@ -27,19 +27,14 @@ export const PageShell: React.FC<PageShellProps> = ({
   subtitle,
   actions,
   prefix,
-  maxWidth = 'default',
+  maxWidth = "default",
   isLoading = false,
   error = null,
   children,
 }) => {
   return (
     <PageContainer maxWidth={maxWidth}>
-      <PageHeader
-        title={title}
-        subtitle={subtitle}
-        actions={actions}
-        prefix={prefix}
-      />
+      <PageHeader title={title} subtitle={subtitle} actions={actions} prefix={prefix} />
       {error && (
         <div className="mb-6 p-4 bg-rose-500/10 border border-rose-500/20 text-[var(--color-overdue)] rounded-[var(--radius-lg)] text-sm font-medium">
           {error}
@@ -55,5 +50,5 @@ export const PageShell: React.FC<PageShellProps> = ({
         children
       )}
     </PageContainer>
-  )
-}
+  );
+};

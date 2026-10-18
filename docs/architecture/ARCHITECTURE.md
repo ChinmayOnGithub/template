@@ -28,6 +28,7 @@ These principles apply to all project categories (web, CLI, extensions, mobile, 
 Select and customize the topology that matches this project:
 
 ### A. Web / SaaS Application Topology
+
 ```text
 [ Client Viewport / UI ]
         |
@@ -42,6 +43,7 @@ Select and customize the topology that matches this project:
 ```
 
 ### B. Browser Extension Topology
+
 ```text
 [ Content Scripts (DOM Ingestion) ]  <--->  [ Extension Popup / UI ]
                      \                 /
@@ -54,6 +56,7 @@ Select and customize the topology that matches this project:
 ```
 
 ### C. Developer Tool / CLI Topology
+
 ```text
 [ CLI Input / Arguments Parsing (Commands) ]
         |
@@ -68,6 +71,7 @@ Select and customize the topology that matches this project:
 ```
 
 ### D. Standalone Backend / API Service
+
 ```text
 [ API Gateway / HTTP Server (Fastify / Express / Spring) ]
         | (Request validation, auth middleware)
@@ -82,6 +86,7 @@ Select and customize the topology that matches this project:
 ```
 
 ### E. Native Systems / C++ / Rust Topology
+
 ```text
 [ Platform Entry Point / Driver ]
         |
@@ -96,7 +101,7 @@ Select and customize the topology that matches this project:
 
 ## 3. Current Project Architecture
 
-*(To be filled during project initialization for this specific repository)*
+_(To be filled during project initialization for this specific repository)_
 
 - **Selected Topology**:
 - **Core Modules**:

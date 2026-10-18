@@ -24,15 +24,15 @@ Performance constraints must be established based on project purpose and user ex
 
 ## 2. Project Performance Budget Table
 
-*(To be customized during project initialization based on project requirements)*
+_(To be customized during project initialization based on project requirements)_
 
-| Dimension | Metric | Budget Target | Measurement Tool / Method |
-| :--- | :--- | :--- | :--- |
-| **Initial Load** | FCP / Cold Start | Project defined (e.g. < 1.5s web, < 50ms CLI) | Lighthouse / `time` command |
-| **Interaction** | Latency on primary action | Project defined (e.g. < 100ms optimistic update) | Chrome DevTools Performance panel |
-| **Bundle Size** | Total uncompressed / gzip JS | Project defined (e.g. < 250KB gzipped) | Next.js bundle analyzer / esbuild |
-| **API Latency** | p95 Response Time | Project defined (e.g. < 150ms) | Autocannon / k6 / Datadog |
-| **Database** | Query execution time | Project defined (e.g. < 20ms on indexed filters) | Postgres `EXPLAIN ANALYZE` |
+| Dimension        | Metric                       | Budget Target                                    | Measurement Tool / Method         |
+| :--------------- | :--------------------------- | :----------------------------------------------- | :-------------------------------- |
+| **Initial Load** | FCP / Cold Start             | Project defined (e.g. < 1.5s web, < 50ms CLI)    | Lighthouse / `time` command       |
+| **Interaction**  | Latency on primary action    | Project defined (e.g. < 100ms optimistic update) | Chrome DevTools Performance panel |
+| **Bundle Size**  | Total uncompressed / gzip JS | Project defined (e.g. < 250KB gzipped)           | Next.js bundle analyzer / esbuild |
+| **API Latency**  | p95 Response Time            | Project defined (e.g. < 150ms)                   | Autocannon / k6 / Datadog         |
+| **Database**     | Query execution time         | Project defined (e.g. < 20ms on indexed filters) | Postgres `EXPLAIN ANALYZE`        |
 
 ---
 

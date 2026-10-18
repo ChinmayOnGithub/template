@@ -44,8 +44,8 @@ function changedFiles() {
     names.push(
       ...execFileSync("git", ["diff", "--name-only", "HEAD"], {
         cwd: ROOT,
-        encoding: "utf8"
-      }).split(/\r?\n/)
+        encoding: "utf8",
+      }).split(/\r?\n/),
     );
   } catch {}
 
@@ -53,8 +53,8 @@ function changedFiles() {
     names.push(
       ...execFileSync("git", ["diff", "--name-only", "HEAD~5..HEAD"], {
         cwd: ROOT,
-        encoding: "utf8"
-      }).split(/\r?\n/)
+        encoding: "utf8",
+      }).split(/\r?\n/),
     );
   } catch {}
 
@@ -88,7 +88,7 @@ function score(item, queryTokens, changed) {
     ...(item.keywords ?? []),
     ...(item.symbols ?? []),
     ...(item.relations?.dependsOn ?? []),
-    ...(item.relations?.relatedTo ?? [])
+    ...(item.relations?.relatedTo ?? []),
   ].join(" ");
   const haystackTokens = new Set(tokens(haystack));
   const sourcePath = item.source.split(":")[0];
@@ -100,7 +100,6 @@ function score(item, queryTokens, changed) {
     if (sourceTokens.has(term)) value += 2;
   }
 
-  
   if (changed.has(sourcePath)) value += 5;
   if (item.type === "architecture" || item.type === "invariant" || item.type === "decision") {
     value += 4;
@@ -113,7 +112,9 @@ function main() {
   const task = arg("task");
 
   if (!task) {
-    console.error('Usage: npm run context:build -- --task="your task" [--budget=2000] [--source=false] [--out=.agents/context/last-context.json]');
+    console.error(
+      'Usage: npm run context:build -- --task="your task" [--budget=2000] [--source=false] [--out=.agents/context/last-context.json]',
+    );
     process.exit(1);
   }
 
@@ -160,7 +161,7 @@ function main() {
     selected.push({
       ...entry.item,
       score: entry.score,
-      sourceEvidence: source || undefined
+      sourceEvidence: source || undefined,
     });
 
     selectedSources.add(sourceKey);
@@ -175,7 +176,7 @@ function main() {
     utilization: Number((usedTokens / budget).toFixed(3)),
     selectedItems: selected.length,
     sourceItems: selected.filter((item) => item.sourceEvidence).length,
-    items: selected
+    items: selected,
   };
 
   const outputPath = arg("out");

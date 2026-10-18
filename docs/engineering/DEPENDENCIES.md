@@ -18,7 +18,7 @@ Before running `bun add`, `npm install`, `cargo add`, or equivalent, evaluate:
 
 1. **Native / Standard Library Feasibility**:
    Can this problem be solved cleanly using language standard libraries or native platform APIs?
-   *(e.g., native `fetch`, Web Crypto API, `URL`, `Intl`, `structuredClone`)*
+   _(e.g., native `fetch`, Web Crypto API, `URL`, `Intl`, `structuredClone`)_
 2. **Existing Project Dependencies**:
    Does an already installed package provide this capability or a comparable utility?
 3. **Bundle Weight & Performance**:

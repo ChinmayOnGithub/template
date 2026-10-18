@@ -3,9 +3,11 @@
 Use this prompt when investigating broken behavior, failing tests, or runtime exceptions.
 
 ## Task
+
 Trace the failure to its true root cause and apply a minimal, permanent fix.
 
 ## Protocol
+
 1. **Reproduce**:
    - Execute the exact command or test that demonstrates the defect.
 2. **Observe**:

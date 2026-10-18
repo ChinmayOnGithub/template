@@ -10,7 +10,11 @@ import crypto from "node:crypto";
 function tokenize(value) {
   const normalized = value.toLowerCase();
   const originalTerms = normalized.split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3);
-  const splitTerms = value.replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase().split(/[^a-z0-9_$-]+/).filter((item) => item.length >= 3);
+  const splitTerms = value
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .toLowerCase()
+    .split(/[^a-z0-9_$-]+/)
+    .filter((item) => item.length >= 3);
   return [...new Set([...originalTerms, ...splitTerms])];
 }
 
@@ -20,7 +24,13 @@ function tokenCount(value) {
 
 function score(item, queryTokens) {
   let value = item.type === "symbol" ? 5 : 2;
-  const haystack = [item.id, item.source, item.summary, ...(item.keywords ?? []), ...(item.symbols ?? [])].join(" ");
+  const haystack = [
+    item.id,
+    item.source,
+    item.summary,
+    ...(item.keywords ?? []),
+    ...(item.symbols ?? []),
+  ].join(" ");
   const haystackTokens = new Set(tokenize(haystack));
   const sourceTokens = new Set(tokenize(item.source.split(":")[0]));
   for (const term of queryTokens) {
@@ -33,7 +43,14 @@ function score(item, queryTokens) {
 
 describe("context retrieval", () => {
   it("normalizes task terms deterministically", () => {
-    expect(tokenize("AuthService createUser")).toEqual(["authservice", "createuser", "auth", "service", "create", "user"]);
+    expect(tokenize("AuthService createUser")).toEqual([
+      "authservice",
+      "createuser",
+      "auth",
+      "service",
+      "create",
+      "user",
+    ]);
     expect(tokenize("database, API, auth")).toEqual(["database", "api", "auth"]);
   });
 
@@ -45,7 +62,7 @@ describe("context retrieval", () => {
       source: "src/auth.ts:10",
       summary: "createUser declaration",
       keywords: ["src", "auth", "createuser"],
-      symbols: ["createUser"]
+      symbols: ["createUser"],
     };
     const file = {
       id: "file:src/auth.ts",
@@ -53,7 +70,7 @@ describe("context retrieval", () => {
       source: "src/auth.ts",
       summary: "authentication",
       keywords: ["src", "auth"],
-      symbols: ["createUser"]
+      symbols: ["createUser"],
     };
     expect(score(symbol, query)).toBeGreaterThan(score(file, query));
   });
@@ -66,7 +83,7 @@ describe("context retrieval", () => {
       source: "src/capital.ts",
       summary: "capitalization helpers",
       keywords: ["capital"],
-      symbols: []
+      symbols: [],
     };
     expect(score(unrelated, query)).toBe(2);
   });
@@ -95,7 +112,7 @@ describe("context retrieval", () => {
     const item = {
       source: "src/auth.ts:42",
       summary: "Authentication service",
-      sourceHash: "abc"
+      sourceHash: "abc",
     };
     expect(item.source).toMatch(/^.+:\d+$/);
     expect(item).not.toHaveProperty("content");

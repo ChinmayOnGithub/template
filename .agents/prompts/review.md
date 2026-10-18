@@ -3,9 +3,11 @@
 Use this prompt before merging or committing substantial changes.
 
 ## Task
+
 Review proposed code diffs against engineering standards, type safety, and product invariants.
 
 ## Inspection Checklist
+
 1. **File Headers and Comments**:
    - Do all modified or created files include the required header?
    - Are comments factual, useful, and free of emojis and em dashes?

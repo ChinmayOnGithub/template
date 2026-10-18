@@ -7,6 +7,7 @@ This document establishes the release, versioning, deployment, and verification 
 ## 1. Versioning Protocol
 
 All projects adhere to Semantic Versioning (SemVer `MAJOR.MINOR.PATCH`):
+
 - **MAJOR**: Breaking API, schema, or configuration changes requiring consumer intervention.
 - **MINOR**: Backward-compatible new capabilities, features, or significant optimizations.
 - **PATCH**: Backward-compatible bug fixes, security patches, or minor performance tweaks.
@@ -18,6 +19,7 @@ Maintain a clean `CHANGELOG.md` following Keep a Changelog standards (`Added`, `
 ## 2. Release Lifecycle by Project Category
 
 ### A. Web and SaaS Applications
+
 1. **Pre-deployment Verification**:
    - Run full CI pipeline (lint, typecheck, header check, unit tests, E2E tests).
    - Execute database migration dry-run on staging database.
@@ -33,6 +35,7 @@ Maintain a clean `CHANGELOG.md` following Keep a Changelog standards (`Added`, `
    - If error rate exceeds 1% or health checks fail, revert container or edge deployment immediately.
 
 ### B. Browser Extensions (Chrome / Firefox)
+
 1. **Pre-submission**:
    - Verify compliance with Manifest V3 policies and minimal permissions.
    - Produce deterministic zip bundle using automated packaging script.
@@ -43,11 +46,13 @@ Maintain a clean `CHANGELOG.md` following Keep a Changelog standards (`Added`, `
    - Store updates cannot be instantly rolled back; ensure feature flags protect risky new workflows.
 
 ### C. Developer Extensions (VS Code)
+
 1. Package extension using `@vscode/vsce package`.
 2. Verify local installation with `code --install-extension <pkg>.vsix`.
 3. Publish to Visual Studio Marketplace and Open VSX Registry.
 
 ### D. Native Systems and CLI Utilities
+
 1. Build cross-platform release binaries with stripped debug symbols (`--release` or `-O3`).
 2. Generate SHA-256 checksums and GPG signatures for all distribution artifacts.
 3. Attach binaries and checksums to GitHub Releases.
@@ -57,6 +62,7 @@ Maintain a clean `CHANGELOG.md` following Keep a Changelog standards (`Added`, `
 ## 3. Post-Release Verification Checklist
 
 Immediately following release deployment:
+
 - [ ] Verify production health check endpoints return HTTP 200.
 - [ ] Verify core authentication and primary user journey in live environment.
 - [ ] Inspect error monitoring dashboard (zero unexpected error spike).

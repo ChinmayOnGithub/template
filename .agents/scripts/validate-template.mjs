@@ -10,58 +10,80 @@ import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const ROOT = path.resolve(__dirname, "../../");
-let errors = 0;
+const DEFAULT_ROOT = path.resolve(__dirname, "../../");
 
-function logError(msg) {
-  console.error(`[VALIDATION ERROR] ${msg}`);
-  errors++;
-}
+export function runValidation(rootDir = DEFAULT_ROOT) {
+  const errors = [];
 
-function checkSkills() {
-  const skillsDir = path.join(ROOT, ".agents/skills");
+  function logError(msg) {
+    errors.push(msg);
+  }
+
+  // 1. Check skills structure
+  const skillsDir = path.join(rootDir, ".agents/skills");
   if (!fs.existsSync(skillsDir)) {
     logError("Skills directory missing: .agents/skills");
-    return;
-  }
-  const skills = fs.readdirSync(skillsDir, { withFileTypes: true });
-  for (const s of skills) {
-    if (s.isDirectory()) {
-      const skillMd = path.join(skillsDir, s.name, "SKILL.md");
-      if (!fs.existsSync(skillMd)) {
-        logError(`Skill '${s.name}' missing SKILL.md`);
-        continue;
-      }
-      const content = fs.readFileSync(skillMd, "utf8");
-      if (!content.startsWith("---")) {
-        logError(`Skill '${s.name}/SKILL.md' missing YAML frontmatter opening '---'`);
-      }
-      if (!/name:\s*[a-zA-Z0-9_-]+/.test(content)) {
-        logError(`Skill '${s.name}/SKILL.md' missing 'name' in frontmatter`);
-      }
-      if (!/description:\s*.+/.test(content)) {
-        logError(`Skill '${s.name}/SKILL.md' missing 'description' in frontmatter`);
+  } else {
+    const skills = fs.readdirSync(skillsDir, { withFileTypes: true });
+    for (const s of skills) {
+      if (s.isDirectory()) {
+        const skillMd = path.join(skillsDir, s.name, "SKILL.md");
+        if (!fs.existsSync(skillMd)) {
+          logError(`Skill '${s.name}' missing SKILL.md`);
+          continue;
+        }
+        const content = fs.readFileSync(skillMd, "utf8");
+        if (!content.startsWith("---")) {
+          logError(`Skill '${s.name}/SKILL.md' missing YAML frontmatter opening '---'`);
+        }
+        if (!/name:\s*[a-zA-Z0-9_-]+/.test(content)) {
+          logError(`Skill '${s.name}/SKILL.md' missing 'name' in frontmatter`);
+        }
+        if (!/description:\s*.+/.test(content)) {
+          logError(`Skill '${s.name}/SKILL.md' missing 'description' in frontmatter`);
+        }
       }
     }
   }
-}
 
-function checkProjectTypes() {
-  const ptDir = path.join(ROOT, ".agents/project-types");
+  // 2. Check skill router references in AGENTS.md and GEMINI.md
+  const instructionFiles = ["AGENTS.md", "GEMINI.md", ".agents/AGENTS.md"];
+  for (const rel of instructionFiles) {
+    const filePath = path.join(rootDir, rel);
+    if (!fs.existsSync(filePath)) continue;
+    const content = fs.readFileSync(filePath, "utf8");
+    const skillMatches = content.matchAll(/->\s*`([a-zA-Z0-9_-]+)`/g);
+    for (const match of skillMatches) {
+      const skillName = match[1];
+      const targetDir = path.join(rootDir, ".agents/skills", skillName);
+      if (!fs.existsSync(targetDir)) {
+        logError(`${rel} routes to non-existent skill: '${skillName}'`);
+      }
+    }
+  }
+
+  // 3. Check project types
+  const ptDir = path.join(rootDir, ".agents/project-types");
   if (!fs.existsSync(ptDir)) {
     logError("Project types directory missing: .agents/project-types");
-    return;
-  }
-  const expectedTypes = ["web", "browser-extension", "developer-extension", "mobile", "backend", "native"];
-  for (const t of expectedTypes) {
-    const guidePath = path.join(ptDir, t, "GUIDE.md");
-    if (!fs.existsSync(guidePath)) {
-      logError(`Project type '${t}' missing GUIDE.md at ${path.relative(ROOT, guidePath)}`);
+  } else {
+    const expectedTypes = [
+      "web",
+      "browser-extension",
+      "developer-extension",
+      "mobile",
+      "backend",
+      "native",
+    ];
+    for (const t of expectedTypes) {
+      const guidePath = path.join(ptDir, t, "GUIDE.md");
+      if (!fs.existsSync(guidePath)) {
+        logError(`Project type '${t}' missing GUIDE.md at ${path.relative(rootDir, guidePath)}`);
+      }
     }
   }
-}
 
-function checkDocsStructure() {
+  // 4. Check core documentation structure
   const expectedDocs = [
     "docs/product/PRODUCT_BRIEF.md",
     "docs/product/GOALS.md",
@@ -92,14 +114,13 @@ function checkDocsStructure() {
   ];
 
   for (const doc of expectedDocs) {
-    const docPath = path.join(ROOT, doc);
+    const docPath = path.join(rootDir, doc);
     if (!fs.existsSync(docPath)) {
       logError(`Core documentation file missing: ${doc}`);
     }
   }
-}
 
-function checkMarkdownLinks() {
+  // 5. Check markdown links
   function getMdFiles(dir) {
     let results = [];
     const list = fs.readdirSync(dir, { withFileTypes: true });
@@ -115,7 +136,7 @@ function checkMarkdownLinks() {
     return results;
   }
 
-  const mdFiles = getMdFiles(ROOT);
+  const mdFiles = getMdFiles(rootDir);
   const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
 
   for (const file of mdFiles) {
@@ -123,37 +144,61 @@ function checkMarkdownLinks() {
     let match;
     while ((match = linkRegex.exec(content)) !== null) {
       const target = match[2];
-      if (target.startsWith("http") || target.startsWith("#") || target.startsWith("mailto:")) continue;
+      if (target.startsWith("http") || target.startsWith("#") || target.startsWith("mailto:"))
+        continue;
       const cleanTarget = target.split("#")[0];
       if (!cleanTarget) continue;
       const resolved = path.resolve(path.dirname(file), cleanTarget);
       if (!fs.existsSync(resolved)) {
-        logError(`Broken link in ${path.relative(ROOT, file)}: -> ${target}`);
+        logError(`Broken link in ${path.relative(rootDir, file)}: -> ${target}`);
       }
     }
   }
-}
 
-function checkSecretSafety() {
+  // 6. Check secret safety
   const forbiddenFiles = [".env", ".env.local", ".env.production", "id_rsa", "credentials.json"];
   for (const f of forbiddenFiles) {
-    if (fs.existsSync(path.join(ROOT, f))) {
+    if (fs.existsSync(path.join(rootDir, f))) {
       logError(`Accidental secret or local environment file committed: ${f}`);
     }
   }
+
+  // 7. Check critical config existence
+  const criticalConfigs = [
+    "package.json",
+    "tsconfig.json",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "eslint.config.mjs",
+  ];
+  for (const cfg of criticalConfigs) {
+    if (!fs.existsSync(path.join(rootDir, cfg))) {
+      logError(`Critical configuration file missing: ${cfg}`);
+    }
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
 }
 
-console.log("[VALIDATE] Starting template self-validation checks...");
-checkSkills();
-checkProjectTypes();
-checkDocsStructure();
-checkMarkdownLinks();
-checkSecretSafety();
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(__filename)) {
+  console.log("[VALIDATE] Starting template self-validation checks...");
+  const result = runValidation(DEFAULT_ROOT);
 
-if (errors > 0) {
-  console.error(`[VALIDATE] Template self-validation failed with ${errors} error(s).`);
-  process.exit(1);
-} else {
-  console.log("[VALIDATE] All template structure, skills, markdown links, and safety checks passed.");
-  process.exit(0);
+  if (!result.valid) {
+    for (const err of result.errors) {
+      console.error(`[VALIDATION ERROR] ${err}`);
+    }
+    console.error(
+      `[VALIDATE] Template self-validation failed with ${result.errors.length} error(s).`,
+    );
+    process.exit(1);
+  } else {
+    console.log(
+      "[VALIDATE] All template structure, skills, markdown links, and safety checks passed.",
+    );
+    process.exit(0);
+  }
 }

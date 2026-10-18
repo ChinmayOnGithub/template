@@ -1,11 +1,13 @@
 # Development and Contribution Guide
 
 ## 1. Local Prerequisites
+
 - Runtime: Node.js 20+ LTS or Bun 1.2+
 - Package Manager: Bun or pnpm
 - Git: 2.40+
 
 ## 2. Setup Instructions
+
 ```bash
 # 1. Install dependencies
 bun install
@@ -18,7 +20,9 @@ bun run dev
 ```
 
 ## 3. Standard Verification Commands
+
 Always verify your changes before submitting PRs or claiming task completion:
+
 ```bash
 # Run type check
 bun run typecheck
@@ -37,7 +41,9 @@ bun run build
 ```
 
 ## 4. File Header Requirement
+
 Every human-maintained source file must begin with:
+
 ```text
 /*
  * filename.extension
@@ -45,4 +51,5 @@ Every human-maintained source file must begin with:
  * Why this file matters.
  */
 ```
+
 No emojis. No em dashes. Short, professional, and factual.

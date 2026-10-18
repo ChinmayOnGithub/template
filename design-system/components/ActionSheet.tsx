@@ -4,26 +4,26 @@
  * Standardizes mobile-friendly contextual action menus.
  */
 
-'use client'
+"use client";
 
-import React from 'react'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from './Sheet'
+import React from "react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "./Sheet";
 
 interface ActionSheetItem {
-  id: string
-  label: string
-  icon?: React.ReactNode
-  onClick: () => void
-  danger?: boolean
-  disabled?: boolean
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
+  onClick: () => void;
+  danger?: boolean;
+  disabled?: boolean;
 }
 
 interface ActionSheetProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  description?: string
-  actions: ActionSheetItem[]
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  description?: string;
+  actions: ActionSheetItem[];
 }
 
 export const ActionSheet: React.FC<ActionSheetProps> = ({
@@ -46,25 +46,29 @@ export const ActionSheet: React.FC<ActionSheetProps> = ({
               key={action.id}
               disabled={action.disabled}
               onClick={() => {
-                action.onClick()
-                onClose()
+                action.onClick();
+                onClose();
               }}
               className={[
-                'w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-[var(--radius-md)] text-left transition-colors',
+                "w-full flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-[var(--radius-md)] text-left transition-colors",
                 action.danger
-                  ? 'text-[var(--color-overdue)] hover:bg-[var(--color-overdue)]/10'
-                  : 'text-[var(--color-text-main)] hover:bg-[var(--color-accent)]',
-                action.disabled && 'opacity-40 cursor-not-allowed pointer-events-none',
+                  ? "text-[var(--color-overdue)] hover:bg-[var(--color-overdue)]/10"
+                  : "text-[var(--color-text-main)] hover:bg-[var(--color-accent)]",
+                action.disabled && "opacity-40 cursor-not-allowed pointer-events-none",
               ]
                 .filter(Boolean)
-                .join(' ')}
+                .join(" ")}
             >
-              {action.icon && <span className="w-5 h-5 flex items-center justify-center text-[var(--color-text-muted)] shrink-0">{action.icon}</span>}
+              {action.icon && (
+                <span className="w-5 h-5 flex items-center justify-center text-[var(--color-text-muted)] shrink-0">
+                  {action.icon}
+                </span>
+              )}
               <span>{action.label}</span>
             </button>
           ))}
         </div>
       </SheetContent>
     </Sheet>
-  )
-}
+  );
+};

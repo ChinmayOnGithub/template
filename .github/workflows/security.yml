@@ -19,8 +19,13 @@ jobs:
       - name: Setup Bun runtime
         uses: oven-sh/setup-bun@v2
         with:
-          bun-version: latest
+          bun-version: 1.3.14
 
-      - name: Audit dependencies for known vulnerabilities
-        continue-on-error: true
-        run: bun audit
+      - name: Validate committed secrets safety
+        run: bun run validate-template
+
+      - name: Enforce zero critical vulnerabilities
+        run: bun audit --audit-level=critical
+
+      - name: Report dependency vulnerability matrix
+        run: bun audit || true

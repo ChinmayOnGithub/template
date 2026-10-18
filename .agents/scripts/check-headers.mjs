@@ -13,17 +13,8 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, "../../");
 
 const SOURCE_EXTENSIONS = new Set([".ts", ".tsx", ".js", ".jsx", ".mjs"]);
-const IGNORED_DIRS = new Set([
-  "node_modules",
-  ".next",
-  "dist",
-  "build",
-  "coverage",
-  ".git",
-]);
-const IGNORED_FILES = new Set([
-  "next-env.d.ts",
-]);
+const IGNORED_DIRS = new Set(["node_modules", ".next", "dist", "build", "coverage", ".git"]);
+const IGNORED_FILES = new Set(["next-env.d.ts"]);
 
 let failed = false;
 let checkedCount = 0;
@@ -46,7 +37,9 @@ function checkFile(filePath) {
   checkedCount++;
 
   if (!headerMatch) {
-    console.error(`[HEADER MISSING] ${relPath} does not begin with standard 3-line file header comment.`);
+    console.error(
+      `[HEADER MISSING] ${relPath} does not begin with standard 3-line file header comment.`,
+    );
     failed = true;
     return;
   }

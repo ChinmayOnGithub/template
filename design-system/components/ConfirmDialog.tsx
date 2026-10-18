@@ -4,9 +4,9 @@
  * Prevents accidental data deletion through two-step confirmation.
  */
 
-'use client'
+"use client";
 
-import React from 'react'
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -14,19 +14,19 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from './Dialog'
-import { Button } from './Button'
+} from "./Dialog";
+import { Button } from "./Button";
 
 interface ConfirmDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: () => void
-  title: string
-  description: string
-  confirmText?: string
-  cancelText?: string
-  variant?: 'primary' | 'danger'
-  isLoading?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  description: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: "primary" | "danger";
+  isLoading?: boolean;
 }
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
@@ -35,9 +35,9 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onConfirm,
   title,
   description,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
-  variant = 'primary',
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  variant = "primary",
   isLoading = false,
 }) => {
   return (
@@ -57,5 +57,5 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};

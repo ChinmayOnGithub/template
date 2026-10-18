@@ -8,7 +8,7 @@ inclusion: auto
 
 ---
 
-##  Quick Rules
+## Quick Rules
 
 1. **COSS UI FIRST** - Always check if component exists before creating
 2. **NO HARDCODED COLORS** - Use semantic tokens only
@@ -19,16 +19,17 @@ inclusion: auto
 
 ---
 
-##  Design System Location
+## Design System Location
 
 All documentation is in `/docs/`:
+
 - `DESIGN_SYSTEM.md` - Complete specification
 - `UI_AUDIT.md` - Current issues
 - `UI_IMPLEMENTATION_PLAN.md` - How to implement
 
 ---
 
-##  NEVER Do This
+## NEVER Do This
 
 ```tsx
 // [Avoid] WRONG - Hardcoded colors
@@ -70,7 +71,7 @@ All documentation is in `/docs/`:
 
 ---
 
-##  Component Priority
+## Component Priority
 
 When you need a component, check in this order:
 
@@ -81,12 +82,12 @@ When you need a component, check in this order:
 
 ---
 
-##  Standard Page Structure
+## Standard Page Structure
 
 ```tsx
-import { PageContainer } from '@/components/layout/page-container'
-import { PageHeader } from '@/components/layout/page-header'
-import { Button } from '@/components/ui/button'
+import { PageContainer } from "@/components/layout/page-container";
+import { PageHeader } from "@/components/layout/page-header";
+import { Button } from "@/components/ui/button";
 
 export default function MyPage() {
   return (
@@ -96,65 +97,63 @@ export default function MyPage() {
         description="Description text"
         actions={<Button>Primary Action</Button>}
       />
-      
+
       {/* Stats (optional) */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Stat cards */}
-      </div>
-      
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">{/* Stat cards */}</div>
+
       {/* Content */}
       <div className="space-y-4">
-        {loading ? <Skeleton /> : (
-          items.length === 0 ? (
-            <EmptyState 
-              icon={Icon}
-              title="No items"
-              description="Create your first item"
-              action={{ label: "Create", onClick: handleCreate }}
-            />
-          ) : (
-            <List items={items} />
-          )
+        {loading ? (
+          <Skeleton />
+        ) : items.length === 0 ? (
+          <EmptyState
+            icon={Icon}
+            title="No items"
+            description="Create your first item"
+            action={{ label: "Create", onClick: handleCreate }}
+          />
+        ) : (
+          <List items={items} />
         )}
       </div>
     </PageContainer>
-  )
+  );
 }
 ```
 
 ---
 
-##  Color Tokens Reference
+## Color Tokens Reference
 
 ```tsx
 // Background
-bg-background     // Page background
-bg-card          // Card background
-bg-muted         // Subtle background
+bg - background; // Page background
+bg - card; // Card background
+bg - muted; // Subtle background
 
 // Text
-text-foreground       // Main text
-text-muted-foreground // Secondary text
+text - foreground; // Main text
+text - muted - foreground; // Secondary text
 
 // Borders
-border-border    // Default border
-border-input     // Input border
+border - border; // Default border
+border - input; // Input border
 
 // States
-bg-primary              // Primary action
-bg-destructive          // Delete/danger
-bg-accent              // Hover state
-bg-secondary           // Secondary action
+bg - primary; // Primary action
+bg - destructive; // Delete/danger
+bg - accent; // Hover state
+bg - secondary; // Secondary action
 
 // Semantic
-bg-success    // Green
-bg-warning    // Yellow
-bg-info       // Blue
+bg - success; // Green
+bg - warning; // Yellow
+bg - info; // Blue
 ```
 
 ---
 
-##  Spacing Scale (8px Grid)
+## Spacing Scale (8px Grid)
 
 ```tsx
 gap-0.5  = 4px   (rare)
@@ -170,7 +169,7 @@ Use `space-y-*` for vertical spacing between children.
 
 ---
 
-##  Button Usage
+## Button Usage
 
 ```tsx
 <Button>Primary</Button>
@@ -188,28 +187,31 @@ Use `space-y-*` for vertical spacing between children.
 
 ---
 
-##  Card Usage
+## Card Usage
 
 ```tsx
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 <Card>
   <CardHeader>
     <CardTitle>Title</CardTitle>
     <CardDescription>Description</CardDescription>
   </CardHeader>
-  <CardContent>
-    {/* Content */}
-  </CardContent>
-  <CardFooter>
-    {/* Actions */}
-  </CardFooter>
-</Card>
+  <CardContent>{/* Content */}</CardContent>
+  <CardFooter>{/* Actions */}</CardFooter>
+</Card>;
 ```
 
 ---
 
-##  Icons
+## Icons
 
 ```tsx
 import { Icon } from 'lucide-react'
@@ -226,11 +228,11 @@ import { Icon } from 'lucide-react'
 
 ---
 
-##  Empty State Pattern
+## Empty State Pattern
 
 ```tsx
-import { EmptyState } from '@/components/shared/empty-state'
-import { FileText } from 'lucide-react'
+import { EmptyState } from "@/components/shared/empty-state";
+import { FileText } from "lucide-react";
 
 <EmptyState
   icon={FileText}
@@ -238,38 +240,40 @@ import { FileText } from 'lucide-react'
   description="Upload your first document to get started"
   action={{
     label: "Upload Document",
-    onClick: () => handleUpload()
+    onClick: () => handleUpload(),
   }}
-/>
+/>;
 ```
 
 ---
 
-##  Loading State Pattern
+## Loading State Pattern
 
 ```tsx
-import { Skeleton } from '@/components/ui/skeleton'
-import { CardSkeleton } from '@/components/shared/loading-state'
+import { Skeleton } from "@/components/ui/skeleton";
+import { CardSkeleton } from "@/components/shared/loading-state";
 
-{loading ? (
-  <div className="space-y-4">
-    <CardSkeleton />
-    <CardSkeleton />
-    <CardSkeleton />
-  </div>
-) : (
-  <List data={data} />
-)}
+{
+  loading ? (
+    <div className="space-y-4">
+      <CardSkeleton />
+      <CardSkeleton />
+      <CardSkeleton />
+    </div>
+  ) : (
+    <List data={data} />
+  );
+}
 ```
 
 ---
 
-##  Responsive Classes
+## Responsive Classes
 
 ```tsx
 // Mobile first approach
 <div className="
-  grid 
+  grid
   grid-cols-1           // Mobile: 1 column
   md:grid-cols-2        // Tablet: 2 columns
   lg:grid-cols-3        // Desktop: 3 columns
@@ -296,13 +300,13 @@ Before committing any UI code:
 
 ---
 
-##  If You Break These Rules
+## If You Break These Rules
 
 Your PR will be rejected. These rules ensure Tracker feels like **one product** designed by **one team**.
 
 ---
 
-##  Full Documentation
+## Full Documentation
 
 For complete details, see `/docs/DESIGN_SYSTEM.md`
 

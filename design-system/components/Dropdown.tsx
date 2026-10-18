@@ -4,69 +4,69 @@
  * Standardizes contextual actions and selection menus.
  */
 
-'use client'
+"use client";
 
-import React, { useRef, useState, useEffect, useId } from 'react'
+import React, { useRef, useState, useEffect, useId } from "react";
 
 export interface DropdownItem {
-  id: string
-  label: string
-  icon?: React.ReactNode
-  description?: string
-  disabled?: boolean
-  danger?: boolean
-  separator?: false
+  id: string;
+  label: string;
+  icon?: React.ReactNode;
+  description?: string;
+  disabled?: boolean;
+  danger?: boolean;
+  separator?: false;
 }
 
 export interface DropdownSeparator {
-  separator: true
-  id: string
+  separator: true;
+  id: string;
 }
 
-export type DropdownOption = DropdownItem | DropdownSeparator
+export type DropdownOption = DropdownItem | DropdownSeparator;
 
 interface DropdownProps {
-  trigger: React.ReactNode
-  items: DropdownOption[]
-  align?: 'left' | 'right'
-  width?: 'sm' | 'md' | 'lg'
-  className?: string
+  trigger: React.ReactNode;
+  items: DropdownOption[];
+  align?: "left" | "right";
+  width?: "sm" | "md" | "lg";
+  className?: string;
 }
 
-const widthMap = { sm: 'w-40', md: 'w-52', lg: 'w-64' }
+const widthMap = { sm: "w-40", md: "w-52", lg: "w-64" };
 
 export const Dropdown: React.FC<DropdownProps> = ({
   trigger,
   items,
-  align = 'left',
-  width = 'md',
-  className = '',
+  align = "left",
+  width = "md",
+  className = "",
 }) => {
-  const [open, setOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
-  const menuId = useId()
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const menuId = useId();
 
   // Close on outside click or Escape
   useEffect(() => {
-    if (!open) return
+    if (!open) return;
     const handler = (e: MouseEvent | KeyboardEvent) => {
-      if (e instanceof KeyboardEvent && e.key === 'Escape') {
-        setOpen(false)
-        return
+      if (e instanceof KeyboardEvent && e.key === "Escape") {
+        setOpen(false);
+        return;
       }
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false)
+        setOpen(false);
       }
-    }
-    document.addEventListener('mousedown', handler)
-    document.addEventListener('keydown', handler)
+    };
+    document.addEventListener("mousedown", handler);
+    document.addEventListener("keydown", handler);
     return () => {
-      document.removeEventListener('mousedown', handler)
-      document.removeEventListener('keydown', handler)
-    }
-  }, [open])
+      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("keydown", handler);
+    };
+  }, [open]);
 
-  const alignClass = align === 'right' ? 'right-0' : 'left-0'
+  const alignClass = align === "right" ? "right-0" : "left-0";
 
   return (
     <div ref={ref} className={`relative inline-block ${className}`}>
@@ -77,8 +77,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
-        onClick={() => setOpen(v => !v)}
-        onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setOpen(v => !v)}
+        onClick={() => setOpen((v) => !v)}
+        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setOpen((v) => !v)}
       >
         {trigger}
       </div>
@@ -100,17 +100,17 @@ export const Dropdown: React.FC<DropdownProps> = ({
           `}
         >
           {items.map((item) => {
-            if ('separator' in item && item.separator) {
+            if ("separator" in item && item.separator) {
               return (
                 <div
                   key={item.id}
                   role="separator"
                   className="my-1 border-t border-[var(--color-border)]"
                 />
-              )
+              );
             }
 
-            const opt = item as DropdownItem
+            const opt = item as DropdownItem;
             return (
               <button
                 key={opt.id}
@@ -119,10 +119,12 @@ export const Dropdown: React.FC<DropdownProps> = ({
                 className={`
                   w-full flex items-center gap-2.5 px-3 py-1.5 text-sm text-left
                   transition-colors duration-[var(--motion-duration-fast)]
-                  ${opt.danger
-                    ? 'text-[var(--color-overdue)] hover:bg-[var(--color-overdue)]/10'
-                    : 'text-[var(--color-text-main)] hover:bg-[var(--color-accent)]'}
-                  ${opt.disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer'}
+                  ${
+                    opt.danger
+                      ? "text-[var(--color-overdue)] hover:bg-[var(--color-overdue)]/10"
+                      : "text-[var(--color-text-main)] hover:bg-[var(--color-accent)]"
+                  }
+                  ${opt.disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
                 `}
                 onClick={() => setOpen(false)}
               >
@@ -140,10 +142,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
                   )}
                 </span>
               </button>
-            )
+            );
           })}
         </div>
       )}
     </div>
-  )
-}
+  );
+};
