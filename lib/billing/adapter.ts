@@ -36,42 +36,40 @@ export class RazorpayBillingAdapter implements BillingProvider {
 
   async createCustomer(email: string, _name?: string): Promise<CustomerResult> {
     if (!this.keyId || !this.keySecret) {
-      if (process.env.NODE_ENV === "production") {
-        throw new Error("[BILLING] Razorpay credentials are required in production.");
-      }
-      return { customerId: `cust_mock_${Buffer.from(email).toString("hex").slice(0, 12)}` };
+      throw new Error("Razorpay credentials are required to create a customer.");
     }
 
+    // This adapter currently supplies deterministic reference IDs only. Replace with the
+    // provider API integration before enabling live customer/subscription operations.
     return { customerId: `cust_rzp_${Buffer.from(email).toString("hex").slice(0, 12)}` };
   }
 
   async createSubscription(customerId: string, planId: string): Promise<SubscriptionResult> {
-    return {
-      subscriptionId: `sub_rzp_${planId}_${customerId.slice(-6)}`,
-      status: "active",
-    };
+    if (!this.keyId || !this.keySecret) {
+      throw new Error("Razorpay credentials are required to create a subscription.");
+    }
+    throw new Error(
+      `Razorpay subscription API integration is not implemented (customer=${customerId}, plan=${planId}).`,
+    );
   }
 
   async cancelSubscription(subscriptionId: string): Promise<SubscriptionResult> {
-    return {
-      subscriptionId,
-      status: "canceled",
-    };
+    if (!this.keyId || !this.keySecret) {
+      throw new Error("Razorpay credentials are required to cancel a subscription.");
+    }
+    throw new Error(
+      `Razorpay cancellation API integration is not implemented (subscription=${subscriptionId}).`,
+    );
   }
 
   verifyWebhookSignature(rawBody: string, signature: string, secret: string): boolean {
-    if (!rawBody || !signature || !secret) return false;
+    if (!rawBody || !signature || !secret || !/^[a-f0-9]{64}$/i.test(signature)) return false;
 
     const expectedSignature = crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
+    const sigBuffer = Buffer.from(signature, "hex");
+    const expectedBuffer = Buffer.from(expectedSignature, "hex");
 
-    const sigBuffer = Buffer.from(signature);
-    const expectedBuffer = Buffer.from(expectedSignature);
-
-    if (sigBuffer.length !== expectedBuffer.length) {
-      return false;
-    }
-
-    return crypto.timingSafeEqual(sigBuffer, expectedBuffer);
+    return sigBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(sigBuffer, expectedBuffer);
   }
 }
 
@@ -89,14 +87,27 @@ export class MockBillingAdapter implements BillingProvider {
   }
 
   verifyWebhookSignature(rawBody: string, signature: string, secret: string): boolean {
-    if (!rawBody || !signature || !secret) return false;
-    return signature === "valid_test_signature";
+    // A test adapter must never be a production authentication mechanism.
+    return process.env.NODE_ENV !== "production" &&
+      Boolean(rawBody && secret) &&
+      signature === "valid_test_signature";
   }
 }
 
 export function createBillingAdapter(): BillingProvider {
-  if (process.env.BILLING_PROVIDER === "razorpay") {
+  const provider = process.env.BILLING_PROVIDER?.toLowerCase();
+
+  if (provider === "razorpay") {
     return new RazorpayBillingAdapter();
   }
+
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("BILLING_PROVIDER=razorpay must be explicitly configured in production.");
+  }
+
+  if (provider && provider !== "mock") {
+    throw new Error(`Unsupported BILLING_PROVIDER: ${provider}`);
+  }
+
   return new MockBillingAdapter();
 }
