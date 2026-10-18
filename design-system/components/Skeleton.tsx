@@ -4,32 +4,24 @@
  * Prevents content layout shifts during data fetching.
  */
 
-import React from 'react'
+import React from "react";
 
 export interface SkeletonProps {
-  className?: string
-  variant?: 'text' | 'rect' | 'circle'
+  className?: string;
+  variant?: "text" | "rect" | "circle";
 }
 
-export const Skeleton: React.FC<SkeletonProps> = ({
-  className = '',
-  variant = 'rect'
-}) => {
-  const baseStyle = 'animate-pulse bg-slate-200/80 dark:bg-zinc-800/80'
+export const Skeleton: React.FC<SkeletonProps> = ({ className = "", variant = "rect" }) => {
+  const baseStyle = "animate-pulse bg-slate-200/80 dark:bg-zinc-800/80";
 
   const variants = {
-    text: 'h-4 w-3/4 rounded-[var(--radius-sm)]',
-    rect: 'rounded-[var(--radius-md)]',
-    circle: 'rounded-full'
-  }
+    text: "h-4 w-3/4 rounded-[var(--radius-sm)]",
+    rect: "rounded-[var(--radius-md)]",
+    circle: "rounded-full",
+  };
 
-  return (
-    <div
-      aria-hidden="true"
-      className={`${baseStyle} ${variants[variant]} ${className}`}
-    />
-  )
-}
+  return <div aria-hidden="true" className={`${baseStyle} ${variants[variant]} ${className}`} />;
+};
 
 export const SkeletonWidget: React.FC = () => {
   return (
@@ -44,8 +36,8 @@ export const SkeletonWidget: React.FC = () => {
         <Skeleton variant="rect" className="h-10 w-full" />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const PageSkeleton: React.FC = () => {
   return (
@@ -63,8 +55,8 @@ export const PageSkeleton: React.FC = () => {
       </div>
       <Skeleton className="h-64 w-full rounded-[var(--radius-md)]" />
     </div>
-  )
-}
+  );
+};
 
 export const SectionSkeleton: React.FC = () => {
   return (
@@ -79,8 +71,8 @@ export const SectionSkeleton: React.FC = () => {
         <Skeleton className="h-12 w-full rounded-[var(--radius-md)]" />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export const ListSkeleton: React.FC<{ rows?: number }> = ({ rows = 5 }) => {
   return (
@@ -99,8 +91,8 @@ export const ListSkeleton: React.FC<{ rows?: number }> = ({ rows = 5 }) => {
         </div>
       ))}
     </div>
-  )
-}
+  );
+};
 
 export const CardSkeleton: React.FC = () => {
   return (
@@ -111,10 +103,13 @@ export const CardSkeleton: React.FC = () => {
         <Skeleton className="h-8 w-20 rounded-[var(--radius-sm)]" />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export const TableSkeleton: React.FC<{ rows?: number; cols?: number }> = ({ rows = 4, cols = 4 }) => {
+export const TableSkeleton: React.FC<{ rows?: number; cols?: number }> = ({
+  rows = 4,
+  cols = 4,
+}) => {
   return (
     <div className="w-full border border-[var(--border)] rounded-[var(--radius-md)] overflow-hidden bg-[var(--surface)]">
       <div className="flex items-center gap-4 p-3 bg-[var(--surface-muted)] border-b border-[var(--border)]">
@@ -132,5 +127,5 @@ export const TableSkeleton: React.FC<{ rows?: number; cols?: number }> = ({ rows
         ))}
       </div>
     </div>
-  )
-}
+  );
+};

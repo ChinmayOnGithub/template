@@ -4,45 +4,45 @@
  * Standardizes selection inputs across forms and lists.
  */
 
-'use client'
+"use client";
 
-import React, { useId } from 'react'
+import React, { useId } from "react";
 
-interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
-  label?: string
-  description?: string
-  size?: 'sm' | 'md'
-  indeterminate?: boolean
+interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
+  label?: string;
+  description?: string;
+  size?: "sm" | "md";
+  indeterminate?: boolean;
 }
 
 export const Checkbox: React.FC<CheckboxProps> = ({
   label,
   description,
-  size = 'md',
+  size = "md",
   indeterminate = false,
   checked,
   disabled,
-  className = '',
+  className = "",
   id: propId,
   ...props
 }) => {
-  const autoId = useId()
-  const id = propId ?? autoId
+  const autoId = useId();
+  const id = propId ?? autoId;
 
-  const boxSize = size === 'sm' ? 'w-3.5 h-3.5' : 'w-4 h-4'
-  const labelSize = size === 'sm' ? 'text-xs' : 'text-sm'
+  const boxSize = size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4";
+  const labelSize = size === "sm" ? "text-xs" : "text-sm";
 
   const ref = React.useCallback(
     (node: HTMLInputElement | null) => {
-      if (node) node.indeterminate = indeterminate
+      if (node) node.indeterminate = indeterminate;
     },
-    [indeterminate]
-  )
+    [indeterminate],
+  );
 
   return (
     <label
       htmlFor={id}
-      className={`inline-flex items-start gap-2.5 cursor-pointer group ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+      className={`inline-flex items-start gap-2.5 cursor-pointer group ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
     >
       <div className="relative flex-shrink-0 mt-0.5">
         <input
@@ -71,7 +71,7 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         <svg
           className={`
             absolute inset-0 m-auto text-white pointer-events-none
-            ${size === 'sm' ? 'w-2 h-2' : 'w-2.5 h-2.5'}
+            ${size === "sm" ? "w-2 h-2" : "w-2.5 h-2.5"}
             opacity-0 peer-checked:opacity-100 transition-opacity duration-[var(--motion-duration-fast)]
           `}
           viewBox="0 0 12 12"
@@ -104,5 +104,5 @@ export const Checkbox: React.FC<CheckboxProps> = ({
         </div>
       )}
     </label>
-  )
-}
+  );
+};

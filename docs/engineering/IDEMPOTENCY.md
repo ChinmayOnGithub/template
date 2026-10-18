@@ -7,6 +7,7 @@ This document establishes standards for network retries, background jobs, webhoo
 ## 1. The Core Idempotency Rule
 
 Any operation that can be retried due to network drops, timeouts, process restarts, or queue deliveries must be evaluated for duplicate side effects:
+
 - An idempotent operation produces the exact same resulting state whether it is executed once or multiple times with the same parameters.
 - If an operation cannot be made naturally idempotent, it must enforce idempotency via an **Idempotency Key**.
 
@@ -34,6 +35,7 @@ Any operation that can be retried due to network drops, timeouts, process restar
 ## 3. Standard Retry Strategy
 
 When designing retries for network or database transient failures:
+
 1. **Exponential Backoff with Jitter**:
    Never retry immediately in a tight loop. Use exponential backoff (e.g. 500ms, 1000ms, 2000ms) with randomized jitter to prevent thundering herd problems.
 2. **Bounded Retry Counts**:

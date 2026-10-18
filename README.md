@@ -38,27 +38,66 @@ This repository serves as a seed for bootstrapping new software projects (web ap
                      READY TO CODE
 ```
 
-### Template Foundations (Survives into Projects)
-- **Universal Operating Laws**: `AI_CONSTITUTION.md` (20 universal engineering laws).
-- **Lightweight Navigation Layer**: `AGENTS.md` (<50 lines) synchronized across Claude, Cursor, Windsurf, Gemini, and Antigravity.
-- **On-Demand Skills Suite**: `.agents/skills/` (46 specialized on-demand workflows covering architecture, requirements, code quality, testing, deployment, and web quality).
-- **Reusable Assets**: `.agents/defaults/assets/` (adaptive SVG favicon, app icon, social card).
-- **Deterministic Documentation Tree**: `docs/` (product, architecture, design, engineering, research, AI).
-- **Universal .gitignore Superset**: Comprehensive ignore patterns covering web, mobile, desktop, and native runtimes.
-- **Automated Validation**: `.agents/scripts/` (file headers, template validation, context size audit).
+### Three-Layer Architecture
 
-### Project-Specific Material (Replaceable / Removable)
-- **Default Web Foundation**: Next.js 15 App Router, Tailwind v4, and the 32-component `design-system/`. When initializing a non-web project (CLI, backend, native, extension), this foundation can be cleanly deleted or replaced.
-- **Product & Business Assumptions**: `SPEC.md`, `docs/product/PRODUCT_BRIEF.md`, `docs/product/BUSINESS_MODEL.md`.
-- **Technical Stack Decisions**: `docs/engineering/TECH_STACK.md`.
-- **Project Invariants**: `docs/architecture/INVARIANTS.md`.
+1. **Layer A: Universal Foundation**
+   Every initialized project retains only the pieces it genuinely needs:
+   - Universal operating laws (`AI_CONSTITUTION.md`) and synchronized lightweight agent maps (`AGENTS.md`)
+   - 46 specialized on-demand agent skills in `.agents/skills/`
+   - Git and repository hygiene, universal `.gitignore` superset, and strict file headers
+   - Deterministic documentation tree in `docs/`
+   - Automated quality gates (file headers, template self-validation, context efficiency audit)
+
+2. **Layer B: Project-Type Profiles**
+   Specialized starting points tailored by language and target runtime:
+   - `web/saas`: Next.js 15 App Router, React 19, Tailwind CSS v4, accessible design system primitives
+   - `web/minimal`: Lightweight static or client-rendered web application without database or billing
+   - `backend/node`: Node.js / TypeScript API service
+   - `cli/node`: Automation scripts and command-line interfaces
+   - `browser-extension`: Chrome / Firefox Manifest V3 extensions
+   - `developer-extension`: VS Code and developer tooling extensions
+   - `mobile`: React Native or Flutter mobile applications
+   - `native`: Rust or C++ native systems applications
+
+3. **Layer C: Opt-In Reusable Capabilities**
+   Independently activatable modules with typed contracts, error boundaries, and tests:
+   - `database`: PostgreSQL connection pool protection and Prisma schema / seed scripts (`lib/db/`)
+   - `auth`: Cryptographic session tokens, RBAC permissions, and ownership checks (`lib/auth/`)
+   - `billing`: Product plans, entitlements, limits, and signature-verified webhook handler (`lib/billing/`)
+   - `jobs`: Background runner with exponential backoff and idempotency protection (`lib/jobs/`)
+   - `observability`: Structured JSON logging with credential redaction, `/api/health`, `/api/ready` (`lib/observability/`)
+   - `analytics`: Provider-neutral product analytics adapter with privacy consent flags (`lib/analytics/`)
+   - `storage`: Upload authorization and signed URL generation adapter (`lib/storage/`)
+   - `email`: Transactional email delivery adapter with mock and live transports (`lib/email/`)
+   - `integration`: SaaS Admin Portal integration layer, handshake, and entitlements (`lib/saas-integration/`)
 
 ---
 
-## 2. Quickstart: Starting a New Project
+## 2. Capability Matrix
+
+| Capability                           | Universal Core    | SaaS Web Profile | Optional Module       |
+| :----------------------------------- | :---------------- | :--------------- | :-------------------- |
+| **Project Specification & AI Rules** | Yes               | Yes              | No                    |
+| **TypeScript & Verification Gates**  | Profile-dependent | Yes              | No                    |
+| **Design System & Starter Layouts**  | No                | Yes              | No                    |
+| **PostgreSQL & Prisma ORM**          | No                | Optional         | Yes (`database`)      |
+| **Authentication & RBAC**            | No                | Optional         | Yes (`auth`)          |
+| **Billing & Entitlements**           | No                | Optional         | Yes (`billing`)       |
+| **Background Jobs & Retries**        | No                | Optional         | Yes (`jobs`)          |
+| **Observability & Health Checks**    | Profile-dependent | Yes              | Yes (`observability`) |
+| **Product Analytics**                | No                | Optional         | Yes (`analytics`)     |
+| **Object Storage**                   | No                | Optional         | Yes (`storage`)       |
+| **Transactional Email**              | No                | Optional         | Yes (`email`)         |
+| **SaaS Admin Portal Integration**    | No                | Optional         | Yes (`integration`)   |
+
+---
+
+## 3. Quickstart: Starting a New Project
 
 ### Step 1: Create a Repository from this Template
+
 In GitHub:
+
 1. Click **Use this template** -> **Create a new repository**.
 2. Clone your new repository locally:
    ```bash
@@ -66,26 +105,44 @@ In GitHub:
    cd <your-project-name>
    ```
 
-*(Manual GitHub Configuration: To enable this repository as a GitHub template, navigate to repository **Settings** -> **General** -> check **Template repository**).*
+_(Manual GitHub Configuration: To enable this repository as a GitHub template, navigate to repository **Settings** -> **General** -> check **Template repository**)._
 
 ### Step 2: Initialize the Project
 
 #### Option A: One-Command Initialization (Scripted)
-Run the automated bootstrap script:
-```bash
-# For a Web Application (applies defaults, keeps Next.js foundation)
-bun run init-project --name="My App" --type=web
 
-# For a Non-Web Project (CLI, backend, native) with cleanup
-bun run init-project --name="FastCli" --type=cli --cleanup
+Run the automated bootstrap script with the desired profile and capabilities:
+
+```bash
+# 1. Preview changes before applying (Dry Run)
+bun run init-project --dry-run --name="Admin Portal" --type=web --profile=saas
+
+# 2. SaaS Web Application with full capabilities (Admin Portal, Stremora, Tracker)
+bun run init-project --name="Admin Portal" --type=web --profile=saas --all-capabilities
+
+# 3. Specific capabilities only (e.g., database and auth)
+bun run init-project --name="SaaS MVP" --type=web --profile=saas --capabilities=database,auth
+
+# 4. Lightweight web tool without database (Namer)
+bun run init-project --name="Namer" --type=web --profile=minimal
+
+# 5. Node Backend API with cleanup of web scaffolding
+bun run init-project --name="Core API" --type=backend --profile=node --capabilities=database,observability --cleanup
+
+# 6. CLI tool with node profile and cleanup
+bun run init-project --name="Data Sync" --type=cli --profile=node --cleanup
 ```
 
 #### Option B: AI-Guided Initialization (Prompt)
+
 Open the repository in your AI coding environment (Antigravity, Cursor, Windsurf, Claude Code) and prompt:
+
 ```text
 Execute .agents/prompts/new-project.md to initialize this project.
 ```
+
 The AI agent will:
+
 1. Discover project identity and classify category.
 2. Formulate product requirements (`SPEC.md`, `PRODUCT_BRIEF.md`, `GOALS.md`, `BUSINESS_MODEL.md`).
 3. Select technology stack and document in `docs/engineering/TECH_STACK.md`.
@@ -98,7 +155,7 @@ The AI agent will:
 
 ---
 
-## 3. Directory Layout
+## 4. Directory Layout
 
 ```text
 /
@@ -191,17 +248,17 @@ The AI agent will:
 
 ---
 
-## 4. Personal Defaults vs Universal Rules
+## 5. Personal Defaults vs Universal Rules
 
-| Concept | Location | Scope |
-| :--- | :--- | :--- |
-| **Universal Rules** | `AI_CONSTITUTION.md`, `.agents/rules/` | Non-negotiable for all projects (modularity, security, type safety, verification, truthfulness). |
+| Concept               | Location                                              | Scope                                                                                                           |
+| :-------------------- | :---------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------- |
+| **Universal Rules**   | `AI_CONSTITUTION.md`, `.agents/rules/`                | Non-negotiable for all projects (modularity, security, type safety, verification, truthfulness).                |
 | **Personal Defaults** | `.agents/defaults/`, `docs/design/DESIGN_DEFAULTS.md` | Recommended preferences (fonts, icons, favicon, near-black canvas, Bun, Vitest). Easy to customize or override. |
-| **Project Decisions** | `SPEC.md`, `docs/engineering/TECH_STACK.md` | Decided per project (product name, target user, specific database, auth provider, deployment host). |
+| **Project Decisions** | `SPEC.md`, `docs/engineering/TECH_STACK.md`           | Decided per project (product name, target user, specific database, auth provider, deployment host).             |
 
 ---
 
-## 5. Verification Commands
+## 6. Verification Commands
 
 Run verification commands from the project root:
 

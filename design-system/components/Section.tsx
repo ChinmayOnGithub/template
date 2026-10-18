@@ -4,22 +4,22 @@
  * Standardizes vertical rhythm and section boundaries.
  */
 
-import React from 'react'
+import React from "react";
 
 interface SectionProps {
   /** Section heading text */
-  title?: string
+  title?: string;
   /** Optional count badge shown beside the title */
-  count?: number
+  count?: number;
   /** Optional right-side action (e.g. an IconButton or Button) */
-  action?: React.ReactNode
+  action?: React.ReactNode;
   /** Children  -  the section body content */
-  children: React.ReactNode
+  children: React.ReactNode;
   /** Remove the top separator line */
-  noSeparator?: boolean
+  noSeparator?: boolean;
   /** Tighten vertical spacing for dense layouts */
-  compact?: boolean
-  className?: string
+  compact?: boolean;
+  className?: string;
 }
 
 /**
@@ -42,18 +42,20 @@ export const Section: React.FC<SectionProps> = ({
   children,
   noSeparator = false,
   compact = false,
-  className = '',
+  className = "",
 }) => {
-  const hasHeader = title || action
+  const hasHeader = title || action;
 
   return (
-    <div className={['flex flex-col', compact ? 'gap-2' : 'gap-3', className].join(' ')}>
+    <div className={["flex flex-col", compact ? "gap-2" : "gap-3", className].join(" ")}>
       {hasHeader && (
         <div
           className={[
-            'flex items-center justify-between gap-3',
-            !noSeparator ? 'border-b border-[var(--color-border)] pb-2' : '',
-          ].filter(Boolean).join(' ')}
+            "flex items-center justify-between gap-3",
+            !noSeparator ? "border-b border-[var(--color-border)] pb-2" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           {title && (
             <div className="flex items-center gap-2">
@@ -67,16 +69,10 @@ export const Section: React.FC<SectionProps> = ({
               )}
             </div>
           )}
-          {action && (
-            <div className="shrink-0">
-              {action}
-            </div>
-          )}
+          {action && <div className="shrink-0">{action}</div>}
         </div>
       )}
-      <div className="flex flex-col gap-0">
-        {children}
-      </div>
+      <div className="flex flex-col gap-0">{children}</div>
     </div>
-  )
-}
+  );
+};

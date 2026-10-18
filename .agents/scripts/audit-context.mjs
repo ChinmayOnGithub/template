@@ -20,7 +20,7 @@ function getStats(relPath) {
   return {
     lines: content.split("\n").length,
     bytes: Buffer.byteLength(content, "utf8"),
-    words: content.trim().split(/\s+/).filter(Boolean).length
+    words: content.trim().split(/\s+/).filter(Boolean).length,
   };
 }
 
@@ -35,7 +35,9 @@ console.log("===================================================================
 console.log("\n[LAYER 1: ALWAYS-LOADED CORE NAVIGATION]");
 for (const file of ["AGENTS.md", "AI_CONSTITUTION.md"]) {
   const stats = getStats(file);
-  console.log(`- ${file.padEnd(25)}: ${String(stats.lines).padStart(4)} lines | ${String(stats.words).padStart(5)} words | ${String(stats.bytes).padStart(6)} bytes`);
+  console.log(
+    `- ${file.padEnd(25)}: ${String(stats.lines).padStart(4)} lines | ${String(stats.words).padStart(5)} words | ${String(stats.bytes).padStart(6)} bytes`,
+  );
 }
 
 console.log("\n[LAYER 2: PERMANENT RULES (.agents/rules/)]");
@@ -43,7 +45,9 @@ const rulesDir = path.join(ROOT, ".agents/rules");
 if (fs.existsSync(rulesDir)) {
   for (const file of fs.readdirSync(rulesDir).sort()) {
     const stats = getStats(path.join(".agents/rules", file));
-    console.log(`- ${file.padEnd(25)}: ${String(stats.lines).padStart(4)} lines | ${String(stats.words).padStart(5)} words | ${String(stats.bytes).padStart(6)} bytes`);
+    console.log(
+      `- ${file.padEnd(25)}: ${String(stats.lines).padStart(4)} lines | ${String(stats.words).padStart(5)} words | ${String(stats.bytes).padStart(6)} bytes`,
+    );
   }
 }
 
@@ -53,23 +57,31 @@ let totalSkillWords = 0;
 let totalSkillCount = 0;
 
 if (fs.existsSync(skillsDir)) {
-  for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+  for (const entry of fs
+    .readdirSync(skillsDir, { withFileTypes: true })
+    .sort((a, b) => a.name.localeCompare(b.name))) {
     if (!entry.isDirectory()) continue;
     totalSkillCount++;
     const stats = getStats(path.join(".agents/skills", entry.name, "SKILL.md"));
     totalSkillWords += stats.words;
-    console.log(`- Skill: ${entry.name.padEnd(26)}: ${String(stats.words).padStart(5)} words (${stats.bytes} B)`);
+    console.log(
+      `- Skill: ${entry.name.padEnd(26)}: ${String(stats.words).padStart(5)} words (${stats.bytes} B)`,
+    );
   }
 }
 
-console.log(`\nTotal On-Demand Skills: ${totalSkillCount} (Avg words per skill: ${Math.round(totalSkillWords / (totalSkillCount || 1))})`);
+console.log(
+  `\nTotal On-Demand Skills: ${totalSkillCount} (Avg words per skill: ${Math.round(totalSkillWords / (totalSkillCount || 1))})`,
+);
 
 console.log("\n[LAYER 4: REUSABLE WORKFLOW PROMPTS (.agents/prompts/)]");
 const promptsDir = path.join(ROOT, ".agents/prompts");
 if (fs.existsSync(promptsDir)) {
   for (const file of fs.readdirSync(promptsDir).sort()) {
     const stats = getStats(path.join(".agents/prompts", file));
-    console.log(`- Prompt: ${file.padEnd(25)}: ${String(stats.lines).padStart(4)} lines | ${String(stats.words).padStart(5)} words`);
+    console.log(
+      `- Prompt: ${file.padEnd(25)}: ${String(stats.lines).padStart(4)} lines | ${String(stats.words).padStart(5)} words`,
+    );
   }
 }
 
@@ -87,9 +99,15 @@ if (fs.existsSync(indexPath) && fs.existsSync(cachePath)) {
 
   console.log(`- Indexed files          : ${index.files?.length ?? 0}`);
   console.log(`- Cached items           : ${cache.items?.length ?? 0}`);
-  console.log(`- Estimated source tokens: ${estimatedTokens(sourceBytes)} (4 chars/token approximation)`);
-  console.log(`- Estimated cache tokens : ${estimatedTokens(cachedBytes)} (4 chars/token approximation)`);
-  console.log(`- Cache ratio            : ${sourceBytes ? (cachedBytes / sourceBytes * 100).toFixed(1) : "0.0"}%`);
+  console.log(
+    `- Estimated source tokens: ${estimatedTokens(sourceBytes)} (4 chars/token approximation)`,
+  );
+  console.log(
+    `- Estimated cache tokens : ${estimatedTokens(cachedBytes)} (4 chars/token approximation)`,
+  );
+  console.log(
+    `- Cache ratio            : ${sourceBytes ? ((cachedBytes / sourceBytes) * 100).toFixed(1) : "0.0"}%`,
+  );
 } else {
   console.log("- Context index           : not generated (run npm run context:index)");
 }
@@ -99,12 +117,17 @@ if (fs.existsSync(lastContextPath)) {
   const selected = context.items ?? [];
   const sourceItems = selected.filter((item) => item.sourceEvidence);
   const summaryWords = selected.reduce(
-    (sum, item) => sum + String(item.summary ?? "").trim().split(/\s+/).filter(Boolean).length,
-    0
+    (sum, item) =>
+      sum +
+      String(item.summary ?? "")
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean).length,
+    0,
   );
   const sourceWords = sourceItems.reduce(
     (sum, item) => sum + String(item.sourceEvidence).trim().split(/\s+/).filter(Boolean).length,
-    0
+    0,
   );
 
   console.log(`- Last context items     : ${selected.length}`);

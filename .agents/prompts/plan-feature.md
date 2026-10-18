@@ -3,9 +3,11 @@
 Use this prompt before implementing a non-trivial feature or modifying existing core flows.
 
 ## Task
+
 Formulate an explicit, modular implementation plan with risk and dependency analysis.
 
 ## Required Output
+
 1. **Scope and User Value**:
    - What user goal does this feature satisfy?
    - What are the non-goals for this slice?

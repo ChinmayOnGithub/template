@@ -4,20 +4,20 @@
  * Ensures consistent viewport boundaries across all pages.
  */
 
-import React from 'react'
+import React from "react";
 
 interface PageContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Max-width variant. 'default' suits most pages; 'wide' for data-heavy views */
-  maxWidth?: 'default' | 'wide' | 'narrow'
+  maxWidth?: "default" | "wide" | "narrow";
   /** Remove horizontal padding  -  useful when a parent already applies it */
-  noPadding?: boolean
+  noPadding?: boolean;
 }
 
 const maxWidthClasses = {
-  narrow: 'max-w-2xl',
-  default: 'max-w-5xl',
-  wide: 'max-w-7xl',
-}
+  narrow: "max-w-2xl",
+  default: "max-w-5xl",
+  wide: "max-w-7xl",
+};
 
 /**
  * PageContainer
@@ -32,23 +32,25 @@ const maxWidthClasses = {
  */
 export const PageContainer: React.FC<PageContainerProps> = ({
   children,
-  maxWidth = 'default',
+  maxWidth = "default",
   noPadding = false,
-  className = '',
+  className = "",
   ...props
 }) => {
   return (
     <div
       className={[
-        'w-full mx-auto',
+        "w-full mx-auto",
         maxWidthClasses[maxWidth],
-        noPadding ? '' : 'px-4 md:px-6',
-        'py-6',
+        noPadding ? "" : "px-4 md:px-6",
+        "py-6",
         className,
-      ].filter(Boolean).join(' ')}
+      ]
+        .filter(Boolean)
+        .join(" ")}
       {...props}
     >
       {children}
     </div>
-  )
-}
+  );
+};

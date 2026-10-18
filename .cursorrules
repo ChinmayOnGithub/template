@@ -7,7 +7,7 @@ Before modifying code:
 3. Check `.agents/rules/` for permanent standards on engineering, security, product, and voice.
 4. If initializing or planning a new project, run `.agents/prompts/new-project.md`.
 5. If working on a specific project type, consult `.agents/project-types/<category>/`.
-6. Load the specific relevant skill from `.agents/skills/<skill-name>/SKILL.md` (e.g. `frontend-design`, `eval-driven-development`, `debugging`).
+6. Load the specific relevant skill from `.agents/skills/<skill-name>/SKILL.md` (e.g. `design-systems-frontend-architecture`, `define-evals`, `debugger`).
 7. Inspect existing implementation patterns before creating new ones.
 8. Run the smallest relevant verification after changes.
 

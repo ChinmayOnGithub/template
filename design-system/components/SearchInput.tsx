@@ -4,14 +4,14 @@
  * Standardizes search inputs across navigation and filters.
  */
 
-import React from 'react'
-import { Search, X } from 'lucide-react'
+import React from "react";
+import { Search, X } from "lucide-react";
 
-interface SearchInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
-  value: string
+interface SearchInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
+  value: string;
   /** Called when text value changes. Preferred over native onChange. */
-  onValueChange?: (value: string) => void
-  onClear?: () => void
+  onValueChange?: (value: string) => void;
+  onClear?: () => void;
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -19,19 +19,19 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   onValueChange,
   onClear,
   onChange,
-  placeholder = 'Search...',
-  className = '',
+  placeholder = "Search...",
+  className = "",
   ...props
 }) => {
   const handleClear = () => {
-    onValueChange?.('')
-    onClear?.()
-  }
+    onValueChange?.("");
+    onClear?.();
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onValueChange?.(e.target.value)
-    onChange?.(e)
-  }
+    onValueChange?.(e.target.value);
+    onChange?.(e);
+  };
 
   return (
     <div className={`relative flex-1 ${className}`}>
@@ -55,5 +55,5 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         </button>
       )}
     </div>
-  )
-}
+  );
+};

@@ -20,13 +20,13 @@ This document establishes the error handling architecture and standards across a
 
 ## 2. Error Taxonomy and Classification
 
-| Category | Typical Causes | Handling Strategy | User Response |
-| :--- | :--- | :--- | :--- |
-| **Validation Error** | Invalid payload, schema failure | Return 400 Bad Request with field-level errors | Highlight specific form fields with actionable guidance |
-| **Authentication Error** | Missing or expired token | Reject with 401 Unauthorized; redirect to login | Prompt re-authentication |
-| **Authorization Error** | Insufficient permissions, tenant mismatch | Reject with 403 Forbidden; log security event | "You do not have permission to access this resource" |
-| **Domain Invariant Error** | Invalid state transition, duplicate record | Throw custom domain error; return typed error code | Clear domain explanation (e.g. "Item already active") |
-| **Infrastructure Error** | Database timeout, external API 500 | Retry with exponential backoff if idempotent; log | "Service temporarily unavailable. Please try again." |
+| Category                   | Typical Causes                             | Handling Strategy                                  | User Response                                           |
+| :------------------------- | :----------------------------------------- | :------------------------------------------------- | :------------------------------------------------------ |
+| **Validation Error**       | Invalid payload, schema failure            | Return 400 Bad Request with field-level errors     | Highlight specific form fields with actionable guidance |
+| **Authentication Error**   | Missing or expired token                   | Reject with 401 Unauthorized; redirect to login    | Prompt re-authentication                                |
+| **Authorization Error**    | Insufficient permissions, tenant mismatch  | Reject with 403 Forbidden; log security event      | "You do not have permission to access this resource"    |
+| **Domain Invariant Error** | Invalid state transition, duplicate record | Throw custom domain error; return typed error code | Clear domain explanation (e.g. "Item already active")   |
+| **Infrastructure Error**   | Database timeout, external API 500         | Retry with exponential backoff if idempotent; log  | "Service temporarily unavailable. Please try again."    |
 
 ---
 
@@ -36,8 +36,7 @@ In TypeScript/JavaScript services, prefer returning Discriminated Unions or expl
 
 ```typescript
 export type Result<T, E = string> =
-  | { success: true; data: T }
-  | { success: false; error: E; code?: string };
+  { success: true; data: T } | { success: false; error: E; code?: string };
 
 // Example Domain Operation
 export async function executeTransfer(req: TransferRequest): Promise<Result<TransferRecord>> {

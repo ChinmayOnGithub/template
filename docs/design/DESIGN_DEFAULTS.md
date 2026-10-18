@@ -23,9 +23,17 @@ They are defaults, not mandatory dogmas. Individual projects may customize or ov
 ## 2. Typography Defaults
 
 ### Font Stacks
+
 - **Primary Interface Font**:
   ```css
-  font-family: Inter, Geist, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family:
+    Inter,
+    Geist,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   ```
   Inter or Geist provide clean glyph geometry, balanced x-height, and neutral legibility on dark displays.
 - **Monospace Font**:
@@ -36,15 +44,16 @@ They are defaults, not mandatory dogmas. Individual projects may customize or ov
 - **Tabular Numbers**: Always enable tabular figures (`font-variant-numeric: tabular-nums` or `tnum`) on numbers to eliminate layout jitter during live updates.
 
 ### Type Scale
-| Level | Font Size | Weight | Line Height | Letter Spacing | Usage |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `display-lg` | 56px | 600 | 1.10 | -1.8px | Large hero headlines |
-| `display-md` | 40px | 600 | 1.15 | -1.0px | Main page titles |
-| `headline` | 28px | 600 | 1.20 | -0.6px | Section headings |
-| `card-title` | 20px | 500 | 1.25 | -0.4px | Card headers, modal titles |
-| `body` | 15px - 16px | 400 | 1.50 | -0.05px | Primary text copy |
-| `body-sm` | 13px - 14px | 400 | 1.50 | 0px | Form field labels, table rows |
-| `caption` | 12px | 400 | 1.40 | 0px | Metadata tags, helper copy |
+
+| Level        | Font Size   | Weight | Line Height | Letter Spacing | Usage                         |
+| :----------- | :---------- | :----- | :---------- | :------------- | :---------------------------- |
+| `display-lg` | 56px        | 600    | 1.10        | -1.8px         | Large hero headlines          |
+| `display-md` | 40px        | 600    | 1.15        | -1.0px         | Main page titles              |
+| `headline`   | 28px        | 600    | 1.20        | -0.6px         | Section headings              |
+| `card-title` | 20px        | 500    | 1.25        | -0.4px         | Card headers, modal titles    |
+| `body`       | 15px - 16px | 400    | 1.50        | -0.05px        | Primary text copy             |
+| `body-sm`    | 13px - 14px | 400    | 1.50        | 0px            | Form field labels, table rows |
+| `caption`    | 12px        | 400    | 1.40        | 0px            | Metadata tags, helper copy    |
 
 ---
 
@@ -69,6 +78,7 @@ They are defaults, not mandatory dogmas. Individual projects may customize or ov
 ## 5. UI Component Primitives
 
 The default component foundation uses:
+
 - `<Button>`: Variants `primary`, `secondary`, `outline`, `ghost`, `danger`. Subtle scaling on interaction (`active:scale-98`).
 - `<Card>`: Composed of `<CardHeader>`, `<CardBody>`, `<CardFooter>`. Hairline border with surface elevation.
 - `<Input>`, `<Textarea>`, `<Select>`: Uniform focus rings (`ring-2 ring-primary/50`).
@@ -81,6 +91,7 @@ The default component foundation uses:
 ## 6. How to Override These Defaults
 
 When starting a new project:
+
 1. To change colors: modify CSS custom properties in `design-system/tokens.css` or project stylesheet.
 2. To change fonts: adjust primary font imports in the HTML head or root layout.
 3. To disable personal design defaults completely: delete or replace `design-system/` and configure your chosen UI stack.

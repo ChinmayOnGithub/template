@@ -35,6 +35,7 @@ This document establishes standards for application logging, metrics, request tr
 ## 3. Health Checks and Readiness Probes
 
 Expose explicit health check endpoints for container and platform monitoring:
+
 - **Liveness Probe** (`/api/healthz` or `/health`): Returns HTTP 200 if the process is responsive and event loop is not blocked.
 - **Readiness Probe** (`/api/ready`): Returns HTTP 200 only if critical backing services (database connection pool, Redis cache) are reachable.
 
@@ -43,6 +44,7 @@ Expose explicit health check endpoints for container and platform monitoring:
 ## 4. Business Metrics and Diagnostics
 
 Instrument critical business paths with counters and histograms:
+
 - Request duration latency percentiles (p50, p95, p99).
 - Background worker queue depth and job processing duration.
 - Authentication failure frequency and rate limit threshold hits.
