@@ -11,8 +11,22 @@ import { sendPasswordResetEmail } from "@/lib/email";
 import { UnauthorizedError, ForbiddenError } from "@/lib/api/errors";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-const authSecret =
-  process.env.AUTH_SECRET || "dev_fallback_secret_must_not_be_used_in_production_32b";
+
+const isProd = process.env.NODE_ENV === "production";
+const isBuild = process.env.NEXT_PHASE === "phase-production-build";
+const envSecret = process.env.AUTH_SECRET;
+if (isProd && !isBuild) {
+  if (
+    !envSecret ||
+    envSecret === "dev_fallback_secret_must_not_be_used_in_production_32b" ||
+    envSecret.length < 32
+  ) {
+    throw new Error(
+      "[AUTH] Valid AUTH_SECRET with at least 32 characters is required in production mode.",
+    );
+  }
+}
+const authSecret = envSecret || "dev_fallback_secret_must_not_be_used_in_production_32b";
 
 export const auth = betterAuth({
   baseURL: appUrl,
@@ -88,14 +102,24 @@ export const auth = betterAuth({
           const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL?.trim().toLowerCase();
           const userEmail = user.email.trim().toLowerCase();
 
-          // Safe administrator bootstrap: designate initial admin if configured
+          // Safe administrator bootstrap: designate initial admin only if configured and no admin exists yet
           if (initialAdminEmail && userEmail === initialAdminEmail) {
-            return {
-              data: {
-                ...user,
-                role: "admin",
-              },
-            };
+            if (isDatabaseConfigured()) {
+              const existingAdmin = await db.user.findFirst({
+                where: { role: "admin" },
+                select: { id: true },
+              });
+              if (!existingAdmin) {
+                return {
+                  data: {
+                    ...user,
+                    role: "admin",
+                  },
+                };
+              }
+            } else {
+              return { data: { ...user, role: "admin" } };
+            }
           }
           return { data: user };
         },

@@ -16,6 +16,7 @@ export interface SendEmailOptions {
 export interface EmailResult {
   messageId: string;
   delivered: boolean;
+  mock?: boolean;
 }
 
 export interface EmailProvider {
@@ -29,7 +30,8 @@ export class MockEmailProvider implements EmailProvider {
     this.sentEmails.push(options);
     return {
       messageId: `msg_mock_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-      delivered: true,
+      delivered: false, // In-memory sink: recorded in memory only, not delivered to external inbox
+      mock: true,
     };
   }
 
@@ -38,22 +40,78 @@ export class MockEmailProvider implements EmailProvider {
   }
 }
 
-let activeEmailProvider: EmailProvider = new MockEmailProvider();
+export class ResendEmailProvider implements EmailProvider {
+  constructor(private apiKey: string) {}
+
+  async send(options: SendEmailOptions): Promise<EmailResult> {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: options.from || process.env.EMAIL_FROM || "noreply@example.com",
+        to: Array.isArray(options.to) ? options.to : [options.to],
+        subject: options.subject,
+        html: options.html,
+        text: options.text,
+        reply_to: options.replyTo,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Resend email delivery failed (${res.status}): ${err}`);
+    }
+
+    const json = (await res.json()) as { id: string };
+    return {
+      messageId: json.id,
+      delivered: true,
+      mock: false,
+    };
+  }
+}
+
+const defaultMockProvider = new MockEmailProvider();
+let customEmailProvider: EmailProvider | null = null;
 
 export function setEmailProvider(provider: EmailProvider): void {
-  activeEmailProvider = provider;
+  customEmailProvider = provider;
+}
+
+export function getActiveEmailProvider(): EmailProvider {
+  if (customEmailProvider) return customEmailProvider;
+  if (process.env.RESEND_API_KEY) {
+    return new ResendEmailProvider(process.env.RESEND_API_KEY);
+  }
+  return defaultMockProvider;
 }
 
 export async function sendEmail(options: SendEmailOptions): Promise<EmailResult> {
   const from = options.from || process.env.EMAIL_FROM || "noreply@example.com";
-  return activeEmailProvider.send({
+
+  if (
+    process.env.NODE_ENV === "production" &&
+    !process.env.RESEND_API_KEY &&
+    !customEmailProvider
+  ) {
+    throw new Error(
+      "[EMAIL] Transactional email provider credentials (RESEND_API_KEY) must be configured in production.",
+    );
+  }
+
+  const provider = getActiveEmailProvider();
+  return provider.send({
     ...options,
     from,
   });
 }
 
 export function getMockEmailProvider(): MockEmailProvider | null {
-  return activeEmailProvider instanceof MockEmailProvider ? activeEmailProvider : null;
+  const provider = getActiveEmailProvider();
+  return provider instanceof MockEmailProvider ? provider : null;
 }
 
 export async function sendVerificationEmail(params: {

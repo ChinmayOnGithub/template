@@ -76,9 +76,17 @@ export async function processBillingWebhook(
           eventType,
         };
       }
-    } catch {
-      // Non-fatal fallback to in-memory store
+    } catch (err: unknown) {
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(
+          `[BILLING WEBHOOK] Database deduplication check failed in production: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
     }
+  } else if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[BILLING WEBHOOK] Database persistence is required for webhook deduplication in production.",
+    );
   }
 
   // Deduplicate in memory
@@ -91,40 +99,70 @@ export async function processBillingWebhook(
     };
   }
 
-  // 4. Dispatch business events
-  switch (eventType) {
-    case "subscription.activated":
-    case "subscription.charged":
-      // User subscription state updated transactionally
-      break;
-    case "subscription.cancelled":
-      // Cancellation state recorded
-      break;
-    case "payment.failed":
-      // Failed charge recorded
-      break;
-    default:
-      break;
-  }
-
-  // 5. Mark as processed
-  processedEventStore.add(eventId);
+  // 4. Dispatch business events with transactional persistence
+  const subData = parsed.payload?.subscription;
+  const subId = subData?.id;
+  const planId = subData?.plan_id;
 
   if (isDatabaseConfigured()) {
     try {
-      await db.webhookEvent.create({
-        data: {
-          provider: "billing",
+      await db.$transaction(async (tx) => {
+        await tx.webhookEvent.create({
+          data: {
+            provider: "billing",
+            eventId,
+            eventType,
+            payload: (parsed as unknown as object) || {},
+            status: "processed",
+          },
+        });
+
+        if (subId) {
+          let newStatus: "active" | "canceled" | "past_due" = "active";
+          let cancelAtPeriodEnd = false;
+
+          if (eventType === "subscription.cancelled") {
+            newStatus = "canceled";
+            cancelAtPeriodEnd = true;
+          } else if (eventType === "payment.failed") {
+            newStatus = "past_due";
+          }
+
+          const existingSub = await tx.subscription.findUnique({
+            where: { providerSubscriptionId: subId },
+          });
+
+          if (existingSub) {
+            await tx.subscription.update({
+              where: { providerSubscriptionId: subId },
+              data: {
+                status: newStatus,
+                cancelAtPeriodEnd,
+                ...(planId ? { planId } : {}),
+              },
+            });
+          }
+        }
+      });
+    } catch (err: unknown) {
+      if (err && typeof err === "object" && "code" in err && err.code === "P2002") {
+        return {
+          success: true,
+          duplicate: true,
           eventId,
           eventType,
-          payload: (parsed as unknown as object) || {},
-          status: "processed",
-        },
-      });
-    } catch {
-      // Event already recorded concurrently
+        };
+      }
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(
+          `[BILLING WEBHOOK] Transaction failed in production: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
     }
   }
+
+  // 5. Mark as processed in local memory store
+  processedEventStore.add(eventId);
 
   return {
     success: true,

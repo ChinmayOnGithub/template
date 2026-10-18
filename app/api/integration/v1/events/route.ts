@@ -1,25 +1,19 @@
 /*
  * route.ts
  * Inbound integration event endpoint receiving verified commands from Admin Portal.
- * Fails closed until events can be durably queued and replay-protected across instances.
+ * Durably records accepted events to database and fails closed in production without storage.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { verifyPortalSignature } from "@/lib/saas-integration/auth";
 import { logger } from "@/lib/observability/logger";
+import { db } from "@/lib/db";
+import type { Prisma } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
-    if (process.env.NODE_ENV === "production") {
-      // A 202 response would imply durable acceptance, which is not implemented yet.
-      return NextResponse.json(
-        { error: "Durable integration event processing is not configured." },
-        { status: 503 },
-      );
-    }
-
     const rawBody = await req.text();
     const signature = req.headers.get("x-integration-signature") || "";
     const signingKey = process.env.ADMIN_PORTAL_SIGNING_PUBLIC_KEY;
@@ -44,14 +38,52 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid event payload." }, { status: 400 });
     }
 
-    logger.info("Authenticated inbound portal event (development only)", {
-      eventId: parsed.eventId,
-      eventType: parsed.eventType,
+    const eventId = parsed.eventId || `evt_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const eventType = parsed.eventType || "unknown";
+
+    if (process.env.DATABASE_URL) {
+      try {
+        await db.webhookEvent.upsert({
+          where: { eventId },
+          update: {
+            status: "accepted",
+            processedAt: new Date(),
+          },
+          create: {
+            provider: "admin_portal",
+            eventId,
+            eventType,
+            payload: parsed as Prisma.InputJsonValue,
+            status: "accepted",
+          },
+        });
+      } catch (dbErr) {
+        logger.error("Failed to durably record integration event", {
+          error: (dbErr as Error).message,
+        });
+        if (process.env.NODE_ENV === "production") {
+          return NextResponse.json(
+            { error: "Durable integration event storage is unavailable." },
+            { status: 503 },
+          );
+        }
+      }
+    } else if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { error: "Durable integration event processing is not configured." },
+        { status: 503 },
+      );
+    }
+
+    logger.info("Authenticated and recorded inbound portal event", {
+      eventId,
+      eventType,
     });
 
     return NextResponse.json(
       {
         accepted: true,
+        eventId,
         processed: false,
         receivedAt: new Date().toISOString(),
       },

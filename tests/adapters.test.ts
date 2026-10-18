@@ -65,7 +65,8 @@ describe("Email Delivery Adapter", () => {
       html: "<p>Welcome!</p>",
     });
 
-    expect(result.delivered).toBe(true);
+    expect(result.delivered).toBe(false);
+    expect(result.mock).toBe(true);
     expect(result.messageId).toBeDefined();
 
     const mock = getMockEmailProvider();

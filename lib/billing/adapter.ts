@@ -43,34 +43,95 @@ export class RazorpayBillingAdapter implements BillingProvider {
     this.keySecret = keySecret;
   }
 
-  async createCustomer(email: string, _name?: string): Promise<CustomerResult> {
+  async createCustomer(email: string, name?: string): Promise<CustomerResult> {
     if (!this.keyId || !this.keySecret) {
-      throw new Error("Razorpay credentials are required to create a customer.");
+      throw new Error(
+        "Razorpay credentials (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET) are required to create a customer.",
+      );
     }
 
-    // This adapter currently supplies deterministic reference IDs only. Replace with the
-    // provider API integration before enabling live customer/subscription operations.
-    return {
-      customerId: `cust_rzp_${Buffer.from(email).toString("hex").slice(0, 12)}`,
-    };
+    const authHeader = `Basic ${Buffer.from(`${this.keyId}:${this.keySecret}`).toString("base64")}`;
+    const res = await fetch("https://api.razorpay.com/v1/customers", {
+      method: "POST",
+      headers: {
+        Authorization: authHeader,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, ...(name ? { name } : {}) }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Razorpay customer creation failed (${res.status}): ${err}`);
+    }
+
+    const json = (await res.json()) as { id: string };
+    return { customerId: json.id };
   }
 
   async createSubscription(customerId: string, planId: string): Promise<SubscriptionResult> {
     if (!this.keyId || !this.keySecret) {
-      throw new Error("Razorpay credentials are required to create a subscription.");
+      throw new Error(
+        "Razorpay credentials (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET) are required to create a subscription.",
+      );
     }
-    throw new Error(
-      `Razorpay subscription API integration is not implemented (customer=${customerId}, plan=${planId}).`,
-    );
+
+    const authHeader = `Basic ${Buffer.from(`${this.keyId}:${this.keySecret}`).toString("base64")}`;
+    const res = await fetch("https://api.razorpay.com/v1/subscriptions", {
+      method: "POST",
+      headers: {
+        Authorization: authHeader,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        plan_id: planId,
+        customer_id: customerId,
+        total_count: 12,
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Razorpay subscription creation failed (${res.status}): ${err}`);
+    }
+
+    const json = (await res.json()) as {
+      id: string;
+      status: "active" | "trialing" | "past_due" | "canceled" | "unpaid";
+    };
+    return {
+      subscriptionId: json.id,
+      status: json.status,
+    };
   }
 
   async cancelSubscription(subscriptionId: string): Promise<SubscriptionResult> {
     if (!this.keyId || !this.keySecret) {
-      throw new Error("Razorpay credentials are required to cancel a subscription.");
+      throw new Error(
+        "Razorpay credentials (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET) are required to cancel a subscription.",
+      );
     }
-    throw new Error(
-      `Razorpay cancellation API integration is not implemented (subscription=${subscriptionId}).`,
-    );
+
+    const authHeader = `Basic ${Buffer.from(`${this.keyId}:${this.keySecret}`).toString("base64")}`;
+    const res = await fetch(`https://api.razorpay.com/v1/subscriptions/${subscriptionId}/cancel`, {
+      method: "POST",
+      headers: {
+        Authorization: authHeader,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ cancel_at_cycle_end: 0 }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`Razorpay subscription cancellation failed (${res.status}): ${err}`);
+    }
+
+    const json = (await res.json()) as { id: string };
+    return {
+      subscriptionId: json.id,
+      status: "canceled",
+    };
   }
 
   verifyWebhookSignature(rawBody: string, signature: string, secret: string): boolean {

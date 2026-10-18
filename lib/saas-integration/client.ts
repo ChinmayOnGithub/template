@@ -15,6 +15,7 @@ import {
   validateProductEvent,
   validateEntitlementSnapshot,
 } from "./contract";
+import { generatePortalSignature, generatePortalRsaSignature } from "./auth";
 
 export interface PortalClientConfig {
   baseUrl: string;
@@ -102,10 +103,18 @@ export class AdminPortalClient {
       const timer = setTimeout(() => controller.abort(), this.timeoutMs);
 
       try {
+        const timestamp = Math.floor(Date.now() / 1000);
+        const serializedBody = body !== undefined ? JSON.stringify(body) : "";
+        const signature = this.clientSecret.includes("-----BEGIN")
+          ? generatePortalRsaSignature(serializedBody, this.clientSecret, timestamp)
+          : generatePortalSignature(serializedBody, this.clientSecret, timestamp);
+
         const headers: Record<string, string> = {
           "Content-Type": "application/json",
           "x-integration-client-id": this.clientId,
           Authorization: `Bearer ${this.clientSecret}`,
+          "x-integration-signature": signature,
+          "x-integration-timestamp": String(timestamp),
           "x-correlation-id": correlationId,
         };
 

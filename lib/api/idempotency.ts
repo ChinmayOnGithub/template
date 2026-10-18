@@ -61,8 +61,16 @@ export async function withIdempotency<T>(
       if (err && typeof err === "object" && "code" in err && err.code === "P2002") {
         throw new ConflictError("Operation is already being processed. Please retry shortly.");
       }
-      // Non-fatal fallback to in-memory store if DB query had transient issue
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(
+          `[IDEMPOTENCY] Durable reservation failed in production: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
     }
+  } else if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[IDEMPOTENCY] Durable database persistence is required for idempotency in production.",
+    );
   }
 
   // 2. Memory store check

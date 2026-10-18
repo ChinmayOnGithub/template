@@ -52,6 +52,34 @@ export function logSecurityEvent(event: SecurityEvent): SecurityEvent {
   return recorded;
 }
 
+export async function logCriticalSecurityEvent(event: SecurityEvent): Promise<SecurityEvent> {
+  const recorded = logSecurityEvent(event);
+  if (isDatabaseConfigured()) {
+    try {
+      await db.auditLog.create({
+        data: {
+          action: recorded.action,
+          userId: recorded.userId || null,
+          ipAddress: recorded.ipAddress || null,
+          metadata: (recorded.metadata as unknown as object) || undefined,
+          entity: "security_critical",
+        },
+      });
+    } catch (err: unknown) {
+      const msg = `[CRITICAL AUDIT FAILURE] Failed to persist critical security audit log: ${err instanceof Error ? err.message : String(err)}`;
+      console.error(msg);
+      if (process.env.NODE_ENV === "production") {
+        throw new Error(msg);
+      }
+    }
+  } else if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "[CRITICAL AUDIT FAILURE] Database persistence is required for critical security actions in production.",
+    );
+  }
+  return recorded;
+}
+
 export function getAuditLogBuffer(): SecurityEvent[] {
   return [...auditLogBuffer];
 }
