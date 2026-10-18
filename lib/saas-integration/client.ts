@@ -126,7 +126,7 @@ export class AdminPortalClient {
         let retryAfterSeconds: number | undefined;
         const retryHeader = res.headers.get("retry-after");
         if (retryHeader) {
-          const parsed = Number.parseInt(retryHeader, 10);
+          const parsed = Number.parseFloat(retryHeader);
           if (Number.isFinite(parsed) && parsed >= 0) retryAfterSeconds = parsed;
         }
 
