@@ -37,10 +37,7 @@ export class IntegrationError extends Error {
   }
 }
 
-export function validatePortalBaseUrl(
-  baseUrl: string,
-  environment = process.env.NODE_ENV,
-): URL {
+export function validatePortalBaseUrl(baseUrl: string, environment = process.env.NODE_ENV): URL {
   let parsedUrl: URL;
   try {
     parsedUrl = new URL(baseUrl);
@@ -51,10 +48,7 @@ export function validatePortalBaseUrl(
   const isLocalHttp =
     parsedUrl.protocol === "http:" &&
     ["localhost", "127.0.0.1", "::1"].includes(parsedUrl.hostname);
-  if (
-    parsedUrl.protocol !== "https:" &&
-    !(environment !== "production" && isLocalHttp)
-  ) {
+  if (parsedUrl.protocol !== "https:" && !(environment !== "production" && isLocalHttp)) {
     throw new Error("AdminPortalClient requires HTTPS outside local development");
   }
   if (parsedUrl.username || parsedUrl.password) {
