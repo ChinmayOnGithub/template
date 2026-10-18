@@ -47,7 +47,9 @@ export class AdminPortalClient {
 
   constructor(config: PortalClientConfig) {
     if (!config.baseUrl || !config.clientId || !config.clientSecret) {
-      throw new Error("AdminPortalClient requires baseUrl, clientId, and clientSecret to be configured");
+      throw new Error(
+        "AdminPortalClient requires baseUrl, clientId, and clientSecret to be configured",
+      );
     }
 
     let parsedUrl: URL;
@@ -56,9 +58,10 @@ export class AdminPortalClient {
     } catch {
       throw new Error("AdminPortalClient baseUrl must be a valid absolute URL");
     }
+
     const isLocalHttp =
       parsedUrl.protocol === "http:" &&
-      (parsedUrl.hostname === "localhost" || parsedUrl.hostname === "127.0.0.1" || parsedUrl.hostname === "::1");
+      ["localhost", "127.0.0.1", "::1"].includes(parsedUrl.hostname);
     if (parsedUrl.protocol !== "https:" && !(process.env.NODE_ENV !== "production" && isLocalHttp)) {
       throw new Error("AdminPortalClient requires HTTPS outside local development");
     }
@@ -135,10 +138,13 @@ export class AdminPortalClient {
           );
         }
 
-        const delayMs = retryAfterSeconds !== undefined
-          ? Math.min(retryAfterSeconds * 1000, 10_000)
-          : Math.min(100 * Math.pow(2, attempt), 2000);
-        await new Promise((resolve) => setTimeout(resolve, delayMs + Math.floor(Math.random() * 50)));
+        const delayMs =
+          retryAfterSeconds !== undefined
+            ? Math.min(retryAfterSeconds * 1000, 10_000)
+            : Math.min(100 * Math.pow(2, attempt), 2000);
+        await new Promise((resolve) =>
+          setTimeout(resolve, delayMs + Math.floor(Math.random() * 50)),
+        );
       } catch (err: unknown) {
         clearTimeout(timer);
         if (err instanceof IntegrationError && !err.retryable) throw err;
@@ -146,12 +152,16 @@ export class AdminPortalClient {
         const isAbort = (err as { name?: string }).name === "AbortError";
         if (attempt > this.maxRetries) {
           throw new IntegrationError(
-            isAbort ? `Admin Portal request timed out after ${this.timeoutMs}ms` : (err as Error).message,
+            isAbort
+              ? `Admin Portal request timed out after ${this.timeoutMs}ms`
+              : (err as Error).message,
             isAbort ? 408 : 500,
             false,
           );
         }
-        await new Promise((resolve) => setTimeout(resolve, Math.min(100 * Math.pow(2, attempt), 2000)));
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.min(100 * Math.pow(2, attempt), 2000)),
+        );
       }
     }
 
@@ -181,7 +191,9 @@ export class AdminPortalClient {
     return validateEntitlementSnapshot(raw);
   }
 
-  public async reportHealth(status: { liveness: boolean; readiness: boolean }): Promise<{ received: boolean }> {
+  public async reportHealth(
+    status: { liveness: boolean; readiness: boolean },
+  ): Promise<{ received: boolean }> {
     return this.requestWithRetry<{ received: boolean }>("/api/v1/health/report", "POST", status);
   }
 }
