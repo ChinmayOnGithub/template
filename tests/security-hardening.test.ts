@@ -13,8 +13,18 @@ import {
   verifyPortalSignature,
 } from "../lib/saas-integration/auth";
 import { validatePortalBaseUrl } from "../lib/saas-integration/client";
+import { generateDevelopmentSecret } from "../lib/config/env";
 
 describe("production security configuration", () => {
+  it("generates cryptographically secure 64-character hex development secrets", () => {
+    const sec1 = generateDevelopmentSecret();
+    const sec2 = generateDevelopmentSecret();
+    expect(sec1).toHaveLength(64);
+    expect(sec2).toHaveLength(64);
+    expect(sec1).not.toBe(sec2);
+    expect(/^[0-9a-f]{64}$/.test(sec1)).toBe(true);
+  });
+
   it("refuses to select a mock billing provider in production", () => {
     expect(() => assertBillingProviderConfigured("production", "mock")).toThrow(
       /must be explicitly configured/,

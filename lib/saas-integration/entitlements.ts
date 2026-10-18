@@ -36,13 +36,24 @@ export class EntitlementManager {
     const key = this.getKey(snapshot.productId, snapshot.tenantId);
     const current = this.cache.get(key);
 
-    if (current && snapshot.version < current.version) {
-      logger.warn("Rejected stale entitlement snapshot version", {
-        incomingVersion: snapshot.version,
-        currentVersion: current.version,
-        productId: snapshot.productId,
-      });
-      return { updated: false, version: current.version };
+    if (current && snapshot.version <= current.version) {
+      if (snapshot.version === current.version) {
+        const isIdentical = JSON.stringify(current) === JSON.stringify(snapshot);
+        if (!isIdentical) {
+          logger.warn("Rejected modified snapshot with identical version", {
+            version: snapshot.version,
+            productId: snapshot.productId,
+          });
+          return { updated: false, version: current.version };
+        }
+      } else {
+        logger.warn("Rejected stale entitlement snapshot version", {
+          incomingVersion: snapshot.version,
+          currentVersion: current.version,
+          productId: snapshot.productId,
+        });
+        return { updated: false, version: current.version };
+      }
     }
 
     this.cache.set(key, snapshot);

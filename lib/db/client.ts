@@ -1,84 +1,52 @@
 /*
  * client.ts
- * Database client singleton and connection management for Prisma.
- * Prevents connection pool exhaustion during Next.js hot module reloading.
+ * Real Prisma database client singleton and connection management.
+ * Provides typed access, genuine transactions, and prevents pool exhaustion during HMR.
  */
 
-export interface DbConfig {
-  databaseUrl?: string;
-  isProduction?: boolean;
+import { PrismaClient } from "@prisma/client";
+
+const globalForPrisma = globalThis as unknown as {
+  prismaInstance: PrismaClient | undefined;
+};
+
+export class DatabaseNotConfiguredError extends Error {
+  constructor(
+    message = "DATABASE_URL is not configured. Set DATABASE_URL in your .env.local file to use database features.",
+  ) {
+    super(message);
+    this.name = "DatabaseNotConfiguredError";
+  }
 }
 
-// In environments where Prisma client has not yet been generated via 'prisma generate',
-// this abstraction provides a safe connection contract without crashing TypeScript compilation.
-export interface TransactionClient {
-  user: unknown;
-  session: unknown;
-  account: unknown;
-  verificationToken: unknown;
-  passwordResetToken: unknown;
-  organization: unknown;
-  organizationMember: unknown;
-  subscription: unknown;
-  auditLog: unknown;
-  webhookEvent: unknown;
-  idempotencyRecord: unknown;
-  $queryRaw: (query: unknown, ...args: unknown[]) => Promise<unknown>;
+export function isDatabaseConfigured(): boolean {
+  const url = process.env.DATABASE_URL;
+  return Boolean(url && url.trim().length > 0);
 }
 
-export interface DatabaseClient {
-  $connect: () => Promise<void>;
-  $disconnect: () => Promise<void>;
-  $transaction: <T>(fn: (tx: TransactionClient) => Promise<T>) => Promise<T>;
-  [key: string]: unknown;
-}
+export function createDatabaseClient(): PrismaClient {
+  const databaseUrl = process.env.DATABASE_URL;
 
-export function createDatabaseClient(config: DbConfig = {}): DatabaseClient {
-  // Generic client wrapper maintaining serverless connection caching
-  const client: DatabaseClient = {
-    $connect: async () => {
-      const activeUrl = config.databaseUrl || process.env.DATABASE_URL;
-      if (!activeUrl && process.env.NODE_ENV === "production") {
-        throw new Error("[DATABASE] DATABASE_URL is required in production environments.");
-      }
-    },
-    $disconnect: async () => {},
-    $transaction: async <T>(fn: (tx: TransactionClient) => Promise<T>): Promise<T> => {
-      const mockTx: TransactionClient = {
-        user: {},
-        session: {},
-        account: {},
-        verificationToken: {},
-        passwordResetToken: {},
-        organization: {},
-        organizationMember: {},
-        subscription: {},
-        auditLog: {},
-        webhookEvent: {},
-        idempotencyRecord: {},
-        $queryRaw: async () => [],
-      };
-      return fn(mockTx);
-    },
-  };
+  const client = new PrismaClient({
+    log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
+    ...(databaseUrl ? { datasources: { db: { url: databaseUrl } } } : {}),
+  });
 
   return client;
 }
 
-// Global cached client instance for Next.js dev server
-const globalForDb = globalThis as unknown as {
-  cachedDbInstance: DatabaseClient | undefined;
-};
-
-export const db: DatabaseClient = globalForDb.cachedDbInstance ?? createDatabaseClient();
+export const db: PrismaClient = globalForPrisma.prismaInstance ?? createDatabaseClient();
 
 if (process.env.NODE_ENV !== "production") {
-  globalForDb.cachedDbInstance = db;
+  globalForPrisma.prismaInstance = db;
 }
 
 export async function withTransaction<T>(
-  action: (tx: TransactionClient) => Promise<T>,
+  action: (tx: Parameters<Parameters<PrismaClient["$transaction"]>[0]>[0]) => Promise<T>,
 ): Promise<T> {
+  if (!isDatabaseConfigured()) {
+    throw new DatabaseNotConfiguredError();
+  }
   return db.$transaction(action);
 }
 

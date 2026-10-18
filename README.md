@@ -216,10 +216,11 @@ The AI agent will:
 │   │   └── (See docs/AI/EXTERNAL_SKILLS.md for full provenance registry & overlap resolutions)
 │   │
 │   └── scripts/
-│       ├── check-headers.js  # Validates 3-line file headers on source files
-│       ├── validate-template.js # Template self-validation check
-│       ├── audit-context.js  # Context footprint and token efficiency audit
-│       └── init-project.js   # Automated project initialization and cleanup
+│       ├── check-headers.mjs    # Validates 3-line file headers on source files
+│       ├── doctor.mjs           # Automated system & setup diagnostic doctor
+│       ├── validate-template.mjs # Template self-validation check
+│       ├── audit-context.mjs    # Context footprint and token efficiency audit
+│       └── init-project.mjs     # Automated project initialization and cleanup
 │
 ├── docs/
 │   ├── product/              # PRODUCT_BRIEF, GOALS, BUSINESS_MODEL, USER_STORIES, SUCCESS_METRICS
@@ -302,7 +303,8 @@ bun run build
 This repository includes a production-oriented starter pack for small websites, developer tools, and scalable SaaS applications:
 
 - **Authentication & Sessions**: Integrated [Better Auth](https://better-auth.com) mounted at `/api/auth/[...all]` with typed browser client (`useSession`, `signIn`, `signUp`, `signOut`), password reset workflows, and session token rotation.
-- **Database Schema**: Unified [Prisma schema](file:///d:/github_projeccts/template/prisma/schema.prisma) mapping directly to Better Auth tables (`user`, `session`, `account`, `verification`) plus multi-tenant organizations, subscriptions, audit logs, and webhooks.
+- **Database Schema**: Unified [Prisma schema](prisma/schema.prisma) mapping directly to Better Auth tables (`user`, `session`, `account`, `verification`) plus multi-tenant organizations, subscriptions, audit logs, and webhooks.
+
 - **Starter Pages**:
   - `/login`: Accessible credentials sign-in with client-side validation
   - `/signup`: New user registration with automatic session issuance

@@ -29,10 +29,34 @@ describe("Sensitive Data Redaction", () => {
     expect((redacted.nested as Record<string, unknown>).publicData).toBe("visible");
   });
 
-  it("redacts bearer tokens in string messages", () => {
+  it("redacts extended secrets including clientSecret, refreshToken, and privateKey", () => {
+    const input = {
+      clientSecret: "sec_abc123",
+      refreshToken: "rt_xyz789",
+      accessToken: "at_456",
+      privateKey: "sample_private_key_content",
+      signingSecret: "sig_sec_999",
+      cookie: "session=xyz; other=123",
+    };
+    const redacted = redactSensitiveData(input) as Record<string, unknown>;
+    expect(redacted.clientSecret).toBe("[REDACTED]");
+    expect(redacted.refreshToken).toBe("[REDACTED]");
+    expect(redacted.accessToken).toBe("[REDACTED]");
+    expect(redacted.privateKey).toBe("[REDACTED]");
+    expect(redacted.signingSecret).toBe("[REDACTED]");
+    expect(redacted.cookie).toBe("[REDACTED]");
+  });
+
+  it("redacts bearer tokens and database credentials in string messages", () => {
     const raw = "Request failed with Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.test";
     const cleaned = redactSensitiveData(raw);
     expect(cleaned).toBe("Request failed with Authorization: Bearer [REDACTED]");
+
+    const dbMsg = "Connecting to postgresql://postgres:myPassword123@db.example.com:5432/proddb";
+    const cleanedDb = redactSensitiveData(dbMsg);
+    expect(cleanedDb).toBe(
+      "Connecting to postgresql://postgres:[REDACTED]@db.example.com:5432/proddb",
+    );
   });
 });
 

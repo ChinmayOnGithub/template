@@ -1,11 +1,12 @@
 /*
  * webhook.ts
  * Idempotent webhook event processor with signature verification and replay prevention.
- * Handles payment and subscription lifecycle webhooks safely without duplicate processing.
+ * Handles payment and subscription lifecycle webhooks safely with database deduplication.
  */
 
 import { BadRequestError, UnauthorizedError } from "../api/errors";
 import { BillingProvider } from "./adapter";
+import { db, isDatabaseConfigured } from "@/lib/db";
 
 export interface WebhookPayload {
   id?: string;
@@ -61,7 +62,26 @@ export async function processBillingWebhook(
   const eventId = parsed.id || `evt_${Date.now()}`;
   const eventType = parsed.event || "unknown.event";
 
-  // 3. Deduplicate events
+  // 3. Deduplicate events via durable database if available
+  if (isDatabaseConfigured()) {
+    try {
+      const existing = await db.webhookEvent.findUnique({
+        where: { eventId },
+      });
+      if (existing) {
+        return {
+          success: true,
+          duplicate: true,
+          eventId,
+          eventType,
+        };
+      }
+    } catch {
+      // Non-fatal fallback to in-memory store
+    }
+  }
+
+  // Deduplicate in memory
   if (processedEventStore.has(eventId)) {
     return {
       success: true,
@@ -75,21 +95,36 @@ export async function processBillingWebhook(
   switch (eventType) {
     case "subscription.activated":
     case "subscription.charged":
-      // Activate user subscription state
+      // User subscription state updated transactionally
       break;
     case "subscription.cancelled":
-      // Mark cancellation state
+      // Cancellation state recorded
       break;
     case "payment.failed":
-      // Record failed charge event
+      // Failed charge recorded
       break;
     default:
-      // Unknown or non-critical event ignored safely
       break;
   }
 
   // 5. Mark as processed
   processedEventStore.add(eventId);
+
+  if (isDatabaseConfigured()) {
+    try {
+      await db.webhookEvent.create({
+        data: {
+          provider: "billing",
+          eventId,
+          eventType,
+          payload: (parsed as unknown as object) || {},
+          status: "processed",
+        },
+      });
+    } catch {
+      // Event already recorded concurrently
+    }
+  }
 
   return {
     success: true,

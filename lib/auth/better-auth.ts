@@ -1,11 +1,14 @@
 /*
  * better-auth.ts
  * Server-side Better Auth initialization and configuration.
- * Configures authentication lifecycle, email/password, session tokens, and security options.
+ * Configures authentication lifecycle, Prisma adapter, rate limiting, and session verification.
  */
 
 import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { db, isDatabaseConfigured } from "@/lib/db";
 import { sendPasswordResetEmail } from "@/lib/email";
+import { UnauthorizedError, ForbiddenError } from "@/lib/api/errors";
 
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 const authSecret =
@@ -14,6 +17,17 @@ const authSecret =
 export const auth = betterAuth({
   baseURL: appUrl,
   secret: authSecret,
+  ...(isDatabaseConfigured()
+    ? {
+        database: prismaAdapter(db, {
+          provider: "postgresql",
+        }),
+      }
+    : {}),
+  rateLimit: {
+    window: 60,
+    max: 100,
+  },
   emailAndPassword: {
     enabled: true,
     autoSignIn: true,
@@ -25,7 +39,6 @@ export const auth = betterAuth({
       });
     },
   },
-
   socialProviders: {
     ...(process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET
       ? {
@@ -58,7 +71,7 @@ export const auth = betterAuth({
         type: "string",
         required: false,
         defaultValue: "member",
-        input: false,
+        input: false, // Strips role from public user input to prevent privilege escalation
       },
       status: {
         type: "string",
@@ -68,6 +81,51 @@ export const auth = betterAuth({
       },
     },
   },
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const initialAdminEmail = process.env.INITIAL_ADMIN_EMAIL?.trim().toLowerCase();
+          const userEmail = user.email.trim().toLowerCase();
+
+          // Safe administrator bootstrap: designate initial admin if configured
+          if (initialAdminEmail && userEmail === initialAdminEmail) {
+            return {
+              data: {
+                ...user,
+                role: "admin",
+              },
+            };
+          }
+          return { data: user };
+        },
+      },
+    },
+  },
 });
 
 export type Auth = typeof auth;
+
+export async function getServerSession() {
+  const { headers } = await import("next/headers");
+  return auth.api.getSession({
+    headers: await headers(),
+  });
+}
+
+export async function requireServerSession() {
+  const session = await getServerSession();
+  if (!session || !session.user) {
+    throw new UnauthorizedError("Authentication required to access this resource.");
+  }
+  return session;
+}
+
+export async function requireAdminSession() {
+  const session = await requireServerSession();
+  const role = (session.user as { role?: string }).role;
+  if (role !== "admin") {
+    throw new ForbiddenError("Administrator privileges required for this operation.");
+  }
+  return session;
+}

@@ -5,7 +5,6 @@
  */
 
 import { ForbiddenError, UnauthorizedError } from "../api/errors";
-import { SessionUser } from "./session";
 
 export type Role = "admin" | "member" | "guest";
 
@@ -44,20 +43,30 @@ const ROLE_PERMISSIONS: Record<Role, Set<Permission>> = {
   guest: new Set(["projects:read"]),
 };
 
-export function hasPermission(role: Role, permission: Permission): boolean {
-  return ROLE_PERMISSIONS[role]?.has(permission) ?? false;
+export interface UserAuthContext {
+  id?: string;
+  userId?: string;
+  role?: string;
+  email?: string;
+  [key: string]: unknown;
 }
 
-export function requirePermission(
-  user: SessionUser | null | undefined,
+export function hasPermission(role: Role | string, permission: Permission): boolean {
+  const normalizedRole = (role as Role) in ROLE_PERMISSIONS ? (role as Role) : "guest";
+  return ROLE_PERMISSIONS[normalizedRole]?.has(permission) ?? false;
+}
+
+export function requirePermission<T extends UserAuthContext>(
+  user: T | null | undefined,
   permission: Permission,
-): SessionUser {
+): T {
   if (!user) {
     throw new UnauthorizedError("Authentication required.");
   }
-  if (!hasPermission(user.role, permission)) {
+  const role = (user.role as Role) || "guest";
+  if (!hasPermission(role, permission)) {
     throw new ForbiddenError(
-      `Access denied. Role "${user.role}" lacks required permission "${permission}".`,
+      `Access denied. Role "${role}" lacks required permission "${permission}".`,
     );
   }
   return user;
@@ -65,7 +74,7 @@ export function requirePermission(
 
 export function assertOwnership(
   resourceOwnerId: string,
-  user: SessionUser | null | undefined,
+  user: UserAuthContext | null | undefined,
 ): void {
   if (!user) {
     throw new UnauthorizedError("Authentication required.");
@@ -74,7 +83,8 @@ export function assertOwnership(
   if (user.role === "admin") {
     return;
   }
-  if (resourceOwnerId !== user.userId) {
+  const userId = user.userId || user.id;
+  if (!userId || resourceOwnerId !== userId) {
     throw new ForbiddenError("You do not have permission to access or modify this resource.");
   }
 }

@@ -100,13 +100,30 @@ export function validateEntitlementSnapshot(data: unknown): EntitlementSnapshot 
 }
 
 export function createDefaultManifest(overrides: Partial<ProductManifest> = {}): ProductManifest {
+  const env = (process.env.NODE_ENV as ProductManifest["environment"]) || "development";
+  const productId =
+    overrides.productId ||
+    process.env.PRODUCT_ID ||
+    (env === "production" ? "" : "dev-starter-product");
+
+  if (
+    env === "production" &&
+    (!productId ||
+      productId === "universal-template-product" ||
+      productId === "dev-starter-product")
+  ) {
+    throw new Error(
+      "[SAAS INTEGRATION] PRODUCT_ID must be explicitly configured with a unique product identifier in production.",
+    );
+  }
+
   const base: ProductManifest = {
     schemaVersion: "1.0.0",
-    productId: "universal-template-product",
-    name: "Universal SaaS Product",
-    version: "1.0.0",
+    productId: productId || "dev-starter-product",
+    name: process.env.PRODUCT_NAME || overrides.name || "SaaS Starter Product",
+    version: process.env.npm_package_version || "1.0.0",
     integrationApiVersion: INTEGRATION_API_VERSION,
-    environment: (process.env.NODE_ENV as ProductManifest["environment"]) || "development",
+    environment: env,
     capabilities: ["health.read", "events.write", "entitlements.read"],
     features: {
       export_csv: {

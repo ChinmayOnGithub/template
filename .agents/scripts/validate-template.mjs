@@ -155,13 +155,51 @@ export function runValidation(rootDir = DEFAULT_ROOT) {
     }
   }
 
-  // 6. Check secret safety
+  // 6. Check secret safety (file names + content pattern scanning)
   const forbiddenFiles = [".env", ".env.local", ".env.production", "id_rsa", "credentials.json"];
   for (const f of forbiddenFiles) {
     if (fs.existsSync(path.join(rootDir, f))) {
       logError(`Accidental secret or local environment file committed: ${f}`);
     }
   }
+
+  const secretPatterns = [
+    { name: "Private Key", regex: /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----/ },
+    { name: "AWS Access Key", regex: /AKIA[0-9A-Z]{16}/ },
+    { name: "GitHub PAT", regex: /ghp_[0-9a-zA-Z]{36}|github_pat_[0-9a-zA-Z_]{82}/ },
+    { name: "Live Stripe/Razorpay Secret Key", regex: /sk_live_[0-9a-zA-Z]{24}/ },
+  ];
+
+  function scanDirForSecrets(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (
+        entry.name === "node_modules" ||
+        entry.name === ".git" ||
+        entry.name === ".next" ||
+        entry.name === "dist" ||
+        entry.name === "bun.lock"
+      ) {
+        continue;
+      }
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        scanDirForSecrets(fullPath);
+      } else if (entry.isFile() && /\.(js|mjs|ts|tsx|json|md|ya?ml|env.*)$/.test(entry.name)) {
+        if (entry.name === ".env.example") continue;
+        const text = fs.readFileSync(fullPath, "utf8");
+        for (const pattern of secretPatterns) {
+          const match = text.match(pattern.regex);
+          if (match && !match[0].includes("EXAMPLE")) {
+            logError(
+              `Potential high-entropy secret detected (${pattern.name}) in ${path.relative(rootDir, fullPath)}`,
+            );
+          }
+        }
+      }
+    }
+  }
+  scanDirForSecrets(rootDir);
 
   // 7. Check critical config existence
   const criticalConfigs = [

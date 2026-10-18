@@ -1,13 +1,14 @@
 /*
  * page.tsx
  * Password recovery request page component.
- * Allows users to request password reset instructions without account enumeration.
+ * Dispatches password reset instructions via Better Auth without account enumeration.
  */
 
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
+import { authClient } from "@/lib/auth/auth-client";
 import { Button } from "@/design-system/components/Button";
 import { Input } from "@/design-system/components/Input";
 import { FormField, FormLabel, FormControl } from "@/design-system/components/FormField";
@@ -16,19 +17,27 @@ import { Card, CardHeader, CardBody, CardFooter } from "@/design-system/componen
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
 
     try {
-      await fetch("/api/auth/forgot-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      const res = await authClient.requestPasswordReset({
+        email,
+        redirectTo: "/reset-password",
       });
-      setSubmitted(true);
+
+      if (res.error) {
+        setError(res.error.message || "Failed to process password reset request.");
+      } else {
+        setSubmitted(true);
+      }
+    } catch {
+      setError("An unexpected error occurred while requesting password reset. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -68,6 +77,12 @@ export default function ForgotPasswordPage() {
               </CardHeader>
 
               <CardBody className="space-y-4">
+                {error && (
+                  <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-xs text-red-400">
+                    {error}
+                  </div>
+                )}
+
                 <FormField>
                   <FormLabel htmlFor="email">Email address</FormLabel>
                   <FormControl>

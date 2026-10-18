@@ -1,8 +1,10 @@
 /*
  * index.ts
  * Provider-neutral product analytics adapter with privacy consent checks.
- * Prevents credential and personal data leakage into external telemetry pipelines.
+ * Prevents non-essential tracking without explicit user consent.
  */
+
+import { hasUserConsented } from "@/lib/consent";
 
 export interface AnalyticsEvent {
   name: string;
@@ -36,7 +38,10 @@ export function setAnalyticsProvider(provider: AnalyticsProvider): void {
 export function isTelemetryAllowed(): boolean {
   if (process.env.TELEMETRY_DISABLED === "true") return false;
   if (process.env.NODE_ENV === "test") return true;
-  return true;
+  if (typeof window !== "undefined") {
+    return hasUserConsented("analytics");
+  }
+  return false;
 }
 
 export async function trackEvent(
