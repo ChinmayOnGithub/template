@@ -22,6 +22,15 @@ export interface BillingProvider {
   verifyWebhookSignature: (rawBody: string, signature: string, secret: string) => boolean;
 }
 
+export function assertBillingProviderConfigured(
+  environment = process.env.NODE_ENV,
+  provider = process.env.BILLING_PROVIDER,
+): void {
+  if (environment === "production" && provider?.toLowerCase() !== "razorpay") {
+    throw new Error("BILLING_PROVIDER=razorpay must be explicitly configured in production.");
+  }
+}
+
 export class RazorpayBillingAdapter implements BillingProvider {
   private keyId: string;
   private keySecret: string;
@@ -91,25 +100,18 @@ export class MockBillingAdapter implements BillingProvider {
     return { subscriptionId, status: "canceled" };
   }
 
-  verifyWebhookSignature(rawBody: string, signature: string, secret: string): boolean {
-    // A test adapter must never be a production authentication mechanism.
-    return (
-      process.env.NODE_ENV !== "production" &&
-      Boolean(rawBody && secret) &&
-      signature === "valid_test_signature"
-    );
+  verifyWebhookSignature(_rawBody: string, _signature: string, _secret: string): boolean {
+    // The mock adapter never authenticates webhook signatures, including in development.
+    return false;
   }
 }
 
 export function createBillingAdapter(): BillingProvider {
   const provider = process.env.BILLING_PROVIDER?.toLowerCase();
+  assertBillingProviderConfigured(process.env.NODE_ENV, provider);
 
   if (provider === "razorpay") {
     return new RazorpayBillingAdapter();
-  }
-
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("BILLING_PROVIDER=razorpay must be explicitly configured in production.");
   }
 
   if (provider && provider !== "mock") {
