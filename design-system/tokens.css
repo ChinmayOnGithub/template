@@ -10,6 +10,8 @@
   --surface: #ffffff;
   --surface-muted: #f4f4f6;
   --surface-elevated: #ffffff;
+  --card: #ffffff;
+  --card-foreground: #09090b;
 
   --border: rgba(0, 0, 0, 0.1);
   --border-subtle: rgba(0, 0, 0, 0.05);
@@ -121,6 +123,8 @@
   --surface: #18181b;
   --surface-muted: #1c1c1f;
   --surface-elevated: #27272a;
+  --card: #18181b;
+  --card-foreground: #f4f4f5;
 
   --border: rgba(255, 255, 255, 0.1);
   --border-subtle: rgba(255, 255, 255, 0.05);

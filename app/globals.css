@@ -5,6 +5,8 @@
  */
 
 @import "tailwindcss";
+@source "../design-system";
+@source "../app";
 @import "../design-system/tokens.css";
 
 body {
