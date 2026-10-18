@@ -1,7 +1,7 @@
 /*
  * auth.ts
  * Service-to-service authentication and signature verification for SaaS integration.
- * Protects communication between the central Admin Portal and connected products.
+ * Supports RSA-SHA256 production verification and HMAC-SHA256 for local tests only.
  */
 
 import crypto from "node:crypto";
@@ -14,14 +14,13 @@ export interface SignatureVerificationOptions {
   maxSkewSeconds?: number;
 }
 
-// In-memory replay cache tracking seen signatures within the validity window
+// Process-local replay protection is best-effort only; production deployments must also
+// enforce durable eventId/idempotency uniqueness in their shared persistence layer.
 const seenSignatures = new Map<string, number>();
 
 function cleanReplayCache(now: number, maxWindowMs: number): void {
-  for (const [sig, timestamp] of seenSignatures.entries()) {
-    if (now - timestamp > maxWindowMs) {
-      seenSignatures.delete(sig);
-    }
+  for (const [signature, timestamp] of seenSignatures.entries()) {
+    if (now - timestamp > maxWindowMs) seenSignatures.delete(signature);
   }
 }
 
@@ -30,10 +29,19 @@ export function generatePortalSignature(
   secret: string,
   timestamp: number = Math.floor(Date.now() / 1000),
 ): string {
-  const hmac = crypto.createHmac("sha256", secret);
-  hmac.update(`${timestamp}.${payload}`);
-  const digest = hmac.digest("hex");
+  const digest = crypto.createHmac("sha256", secret).update(`${timestamp}.${payload}`).digest("hex");
   return `t=${timestamp},v1=${digest}`;
+}
+
+export function generatePortalRsaSignature(
+  payload: string,
+  privateKey: string | Buffer,
+  timestamp: number = Math.floor(Date.now() / 1000),
+): string {
+  const signature = crypto
+    .sign("RSA-SHA256", Buffer.from(`${timestamp}.${payload}`), privateKey)
+    .toString("base64url");
+  return `t=${timestamp},v1=${signature}`;
 }
 
 export function verifyPortalSignature({
@@ -46,62 +54,64 @@ export function verifyPortalSignature({
     throw new AppError("Missing integration signature header", 401, "UNAUTHORIZED");
   }
 
-  const parts = signatureHeader.split(",");
-  let timestampStr: string | undefined;
-  let signatureHex: string | undefined;
-
-  for (const part of parts) {
-    const [k, v] = part.split("=");
-    if (k === "t") timestampStr = v;
-    if (k === "v1") signatureHex = v;
+  const fields = new Map<string, string>();
+  for (const rawPart of signatureHeader.split(",")) {
+    const separator = rawPart.indexOf("=");
+    if (separator <= 0) continue;
+    fields.set(rawPart.slice(0, separator).trim(), rawPart.slice(separator + 1).trim());
   }
 
-  if (!timestampStr || !signatureHex) {
+  const timestampStr = fields.get("t");
+  const signatureValue = fields.get("v1");
+  if (!timestampStr || !signatureValue || !/^\d+$/.test(timestampStr) || !signatureValue) {
     throw new AppError("Malformed integration signature header", 401, "UNAUTHORIZED");
   }
 
-  const timestamp = parseInt(timestampStr, 10);
-  if (isNaN(timestamp)) {
+  const timestamp = Number(timestampStr);
+  if (!Number.isSafeInteger(timestamp)) {
     throw new AppError("Invalid timestamp in integration signature", 401, "UNAUTHORIZED");
   }
 
   const nowSeconds = Math.floor(Date.now() / 1000);
-  const skew = Math.abs(nowSeconds - timestamp);
-
-  if (skew > maxSkewSeconds) {
+  if (Math.abs(nowSeconds - timestamp) > maxSkewSeconds) {
     throw new AppError("Integration signature timestamp expired or skewed", 401, "UNAUTHORIZED");
   }
 
-  // Replay prevention
+  const key = keyResolver(fields.get("kid") || "default");
+  if (!key) {
+    throw new AppError("Integration signing key is not configured", 500, "INTERNAL_ERROR");
+  }
+
+  const signedPayload = Buffer.from(`${timestamp}.${payload}`);
+  let valid = false;
+
+  if (key.includes("-----BEGIN PUBLIC KEY-----")) {
+    try {
+      const signature = Buffer.from(signatureValue, "base64url");
+      valid = signature.length > 0 && crypto.verify("RSA-SHA256", signedPayload, key, signature);
+    } catch {
+      valid = false;
+    }
+  } else {
+    // HMAC is intentionally retained for existing unit tests and local development.
+    // Production routes must configure a public PEM key and never a shared HMAC secret.
+    if (!/^[a-f0-9]{64}$/i.test(signatureValue)) {
+      throw new AppError("Invalid integration signature", 401, "UNAUTHORIZED");
+    }
+    const expected = crypto.createHmac("sha256", key).update(signedPayload).digest();
+    const actual = Buffer.from(signatureValue, "hex");
+    valid = actual.length === expected.length && crypto.timingSafeEqual(expected, actual);
+  }
+
+  if (!valid) {
+    throw new AppError("Invalid integration signature", 401, "UNAUTHORIZED");
+  }
+
   cleanReplayCache(Date.now(), maxSkewSeconds * 1000);
-  if (seenSignatures.has(signatureHex)) {
+  if (seenSignatures.has(signatureValue)) {
     throw new AppError("Replay detected for integration signature", 401, "UNAUTHORIZED");
   }
-
-  // Resolve key
-  const secret = keyResolver("default");
-  if (!secret) {
-    throw new AppError("Integration signing secret is not configured", 500, "INTERNAL_ERROR");
-  }
-
-  const hmac = crypto.createHmac("sha256", secret);
-  hmac.update(`${timestamp}.${payload}`);
-  const expectedDigest = hmac.digest("hex");
-
-  const expectedBuffer = Buffer.from(expectedDigest, "utf8");
-  const actualBuffer = Buffer.from(signatureHex, "utf8");
-
-  if (expectedBuffer.length !== actualBuffer.length) {
-    throw new AppError("Invalid integration signature", 401, "UNAUTHORIZED");
-  }
-
-  const matches = crypto.timingSafeEqual(expectedBuffer, actualBuffer);
-  if (!matches) {
-    throw new AppError("Invalid integration signature", 401, "UNAUTHORIZED");
-  }
-
-  // Record signature to prevent replay
-  seenSignatures.set(signatureHex, Date.now());
+  seenSignatures.set(signatureValue, Date.now());
 
   return { valid: true, timestamp };
 }
