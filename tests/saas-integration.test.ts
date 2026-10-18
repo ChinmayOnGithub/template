@@ -220,7 +220,7 @@ describe("AdminPortalClient & MockAdminPortal Integration", () => {
   beforeEach(() => {
     mockPortal = new MockAdminPortal();
     client = new AdminPortalClient({
-      baseUrl: "http://mock-portal.local",
+      baseUrl: "http://localhost:4000",
       clientId: "tracker-prod",
       clientSecret: "product_secret_key_mock",
       maxRetries: 2,
