@@ -6,10 +6,7 @@
 
 import crypto from "node:crypto";
 import { beforeEach, describe, expect, it } from "vitest";
-import {
-  assertBillingProviderConfigured,
-  MockBillingAdapter,
-} from "../lib/billing/adapter";
+import { assertBillingProviderConfigured, MockBillingAdapter } from "../lib/billing/adapter";
 import {
   clearReplayCacheForTesting,
   generatePortalRsaSignature,
