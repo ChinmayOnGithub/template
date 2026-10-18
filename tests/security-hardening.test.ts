@@ -34,7 +34,9 @@ describe("production security configuration", () => {
   it("does not accept the mock webhook signature in production", () => {
     process.env.NODE_ENV = "production";
     const adapter = new MockBillingAdapter();
-    expect(adapter.verifyWebhookSignature("{}", "valid_test_signature", "configured-secret")).toBe(false);
+    expect(
+      adapter.verifyWebhookSignature("{}", "valid_test_signature", "configured-secret"),
+    ).toBe(false);
   });
 
   it("requires HTTPS for the Admin Portal client in production", () => {
