@@ -29,7 +29,10 @@ export function generatePortalSignature(
   secret: string,
   timestamp: number = Math.floor(Date.now() / 1000),
 ): string {
-  const digest = crypto.createHmac("sha256", secret).update(`${timestamp}.${payload}`).digest("hex");
+  const digest = crypto
+    .createHmac("sha256", secret)
+    .update(`${timestamp}.${payload}`)
+    .digest("hex");
   return `t=${timestamp},v1=${digest}`;
 }
 
@@ -63,7 +66,7 @@ export function verifyPortalSignature({
 
   const timestampStr = fields.get("t");
   const signatureValue = fields.get("v1");
-  if (!timestampStr || !signatureValue || !/^\d+$/.test(timestampStr) || !signatureValue) {
+  if (!timestampStr || !signatureValue || !/^\d+$/.test(timestampStr)) {
     throw new AppError("Malformed integration signature header", 401, "UNAUTHORIZED");
   }
 
