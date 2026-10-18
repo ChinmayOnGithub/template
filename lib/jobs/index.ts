@@ -1,8 +1,7 @@
 /*
  * index.ts
- * Central barrel export for background jobs, error classes, and runner instance.
- * Provides unified access to asynchronous job dispatching and retries.
+ * Backward-compatibility re-export stub for the jobs server infrastructure module.
+ * Routes legacy imports to the authoritative server/jobs implementation.
  */
 
-export * from "./types";
-export * from "./runner";
+export * from "@/server/jobs";

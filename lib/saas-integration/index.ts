@@ -1,13 +1,7 @@
 /*
  * index.ts
- * Barrel export for the SaaS Admin Portal integration layer.
- * Provides public entry points for contract schemas, client, auth, and entitlement managers.
+ * Backward-compatibility re-export stub for the integrations feature module.
+ * Routes legacy imports to the authoritative features/integrations implementation.
  */
 
-export * from "./types";
-export * from "./contract";
-export * from "./auth";
-export * from "./entitlements";
-export * from "./client";
-export * from "./mock-portal";
-export * from "./worker";
+export * from "@/features/integrations";

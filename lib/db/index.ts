@@ -1,8 +1,7 @@
 /*
  * index.ts
- * Central barrel export for database client, transaction helpers, and seed logic.
- * Provides single access point for data persistence layer.
+ * Backward-compatibility re-export stub for the db server infrastructure module.
+ * Routes legacy imports to the authoritative server/db implementation.
  */
 
-export * from "./client";
-export * from "./seed";
+export * from "@/server/db";

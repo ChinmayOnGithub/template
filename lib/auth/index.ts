@@ -1,11 +1,7 @@
 /*
  * index.ts
- * Central barrel export for authentication, session handling, and access control.
- * Provides unified access to Better Auth client, server instance, RBAC, and audit loggers.
+ * Backward-compatibility re-export stub for the auth feature module.
+ * Routes legacy imports to the authoritative features/auth implementation.
  */
 
-export * from "./better-auth";
-export * from "./auth-client";
-export * from "./session";
-export * from "./rbac";
-export * from "./audit";
+export * from "@/features/auth";

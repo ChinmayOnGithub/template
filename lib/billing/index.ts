@@ -1,10 +1,7 @@
 /*
  * index.ts
- * Central barrel export for billing plans, entitlements, adapters, and webhook logic.
- * Provides unified access to subscription management and payment processing.
+ * Backward-compatibility re-export stub for the billing feature module.
+ * Routes legacy imports to the authoritative features/billing implementation.
  */
 
-export * from "./plans";
-export * from "./entitlements";
-export * from "./adapter";
-export * from "./webhook";
+export * from "@/features/billing";

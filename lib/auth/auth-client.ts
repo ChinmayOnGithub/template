@@ -1,16 +1,7 @@
 /*
  * auth-client.ts
- * Browser-side Better Auth client instance for React components and hooks.
- * Provides typed sign-in, sign-up, sign-out, and active session subscription.
+ * Backward-compatibility re-export stub for the auth feature module.
+ * Routes legacy imports to the authoritative features/auth implementation.
  */
 
-import { createAuthClient } from "better-auth/react";
-
-export const authClient = createAuthClient({
-  baseURL:
-    typeof window !== "undefined"
-      ? window.location.origin
-      : process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-});
-
-export const { signIn, signUp, signOut, useSession } = authClient;
+export * from "@/features/auth/auth-client";

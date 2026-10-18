@@ -101,10 +101,54 @@ Select and customize the topology that matches this project:
 
 ## 3. Current Project Architecture
 
-_(To be filled during project initialization for this specific repository)_
+This SaaS starter kit implements a **Feature-Oriented Modular Monolith** topology designed to scale cleanly across multiple downstream products while maintaining strict separation of concerns.
 
-- **Selected Topology**:
-- **Core Modules**:
-- **Data Flow**:
-- **State Ownership**:
-- **External Dependencies & Boundaries**:
+### Architectural Layers
+
+```text
+[ Application Layer ]
+      app/                  (Next.js routes, layouts, thin route handlers)
+        |
+        v
+[ Feature Modules ]
+      features/auth/        (Better Auth, RBAC, sessions, audit logging, auth client)
+      features/billing/     (Plans, Razorpay provider, webhooks, entitlements)
+      features/integrations/(Admin Portal sync, HMAC verification, event worker)
+        |
+        v
+[ Shared Infrastructure ]
+      server/db/            (Prisma client singleton, migrations, connection health)
+      server/email/         (Resend provider, dev in-memory sink)
+      server/storage/       (S3/R2 presigned upload provider)
+      server/jobs/          (Background job runner, retry semantics)
+        |
+        v
+[ Foundation & Utilities ]
+      lib/api/              (Standard JSON envelopes, error taxonomy, idempotency)
+      lib/config/           (Validated environment configuration)
+      lib/observability/    (Structured JSON logger, telemetry metrics)
+      lib/consent/          (Cookie consent manager)
+      lib/seo/              (Metadata generators, JSON-LD schemas)
+      lib/utils.ts          (Predictable class merging via cn)
+```
+
+### Dependency Rules
+
+1. **Inward Dependencies Only**:
+   - `app/` routes delegate business logic to `features/`, `server/`, and `lib/`.
+   - `features/` may depend on `server/`, `lib/`, and `design-system/`. Cross-feature communication must pass through public module entry points (`index.ts`).
+   - `server/` (infrastructure adapters) may depend only on `lib/` (foundation). Infrastructure never depends on `features/` or `app/`.
+   - `lib/` (foundation) contains pure utilities and must never depend on `server/`, `features/`, or `app/`.
+   - `design-system/` contains presentation components and must never import server-only logic, database models, or route handlers.
+
+2. **Server and Client Boundaries**:
+   - Secrets, database queries, and private HMAC keys are restricted to server-side code.
+   - Client components import only from safe client entry points (such as `@/features/auth/auth-client`).
+
+3. **File Naming Standards**:
+   - **Directories**: lowercase kebab-case (`saas-integration`, `api-keys`).
+   - **React Components**: PascalCase (`Button.tsx`, `PlanCard.tsx`).
+   - **General TypeScript Modules**: lowercase kebab-case (`subscription-service.ts`, `worker.ts`).
+   - **Functions and Variables**: camelCase (`createSubscription()`, `getCurrentUser()`).
+   - **Types and Classes**: PascalCase (`SubscriptionStatus`, `BillingProvider`).
+   - **Test Files**: Mirror target module name (`billing.test.ts`, `auth.test.ts`).

@@ -7,9 +7,11 @@ Each ADR documents the context, options evaluated, chosen approach, consequences
 
 ## Decision Records Index
 
-| ID      | Title                    | Status   | Date    | Decision Summary                              | File Link                          |
-| :------ | :----------------------- | :------- | :------ | :-------------------------------------------- | :--------------------------------- |
-| ADR-001 | Template Decision Record | Accepted | Initial | Establishes standard ADR lifecycle and format | [ADR-001](ADR/ADR-001-template.md) |
+| ID      | Title                                               | Status   | Date       | Decision Summary                                              | File Link                                                      |
+| :------ | :-------------------------------------------------- | :------- | :--------- | :------------------------------------------------------------ | :------------------------------------------------------------- |
+| ADR-001 | Template Decision Record                            | Accepted | Initial    | Establishes standard ADR lifecycle and format                 | [ADR-001](ADR/ADR-001-template.md)                             |
+| ADR-002 | Admin Portal Event Lifecycle & Asynchronous Worker  | Accepted | 2026-10-18 | Defines event acceptance, durable logging, and worker retries | [ADR-002](ADR/ADR-002-admin-portal-event-lifecycle.md)         |
+| ADR-003 | Modular Monolith Directory Structure and Boundaries | Accepted | 2026-10-18 | Feature-oriented directory layout, layers, and import rules   | [ADR-003](ADR/ADR-003-modular-monolith-directory-structure.md) |
 
 ---
 
