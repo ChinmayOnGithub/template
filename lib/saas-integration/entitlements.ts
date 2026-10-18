@@ -124,3 +124,4 @@ export class EntitlementManager {
 
 // Global singleton instance for product usage
 export const entitlementManager = new EntitlementManager();
+export const defaultEntitlementManager = entitlementManager;

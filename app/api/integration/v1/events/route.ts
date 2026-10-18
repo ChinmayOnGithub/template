@@ -80,11 +80,27 @@ export async function POST(req: NextRequest) {
       eventType,
     });
 
+    const syncParam = req.nextUrl.searchParams.get("sync");
+    const shouldProcessSync =
+      syncParam === "true" || process.env.AUTO_PROCESS_INTEGRATION_EVENTS === "true";
+
+    let processed = false;
+    if (shouldProcessSync) {
+      const { processInboundPortalEvent } = await import("@/lib/saas-integration/worker");
+      const processResult = await processInboundPortalEvent({
+        eventId,
+        eventType,
+        payload: parsed,
+      });
+      processed = processResult.success;
+    }
+
     return NextResponse.json(
       {
         accepted: true,
         eventId,
-        processed: false,
+        processed,
+        status: processed ? "completed" : "accepted",
         receivedAt: new Date().toISOString(),
       },
       { status: 202 },

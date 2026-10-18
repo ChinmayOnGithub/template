@@ -10,3 +10,4 @@ export * from "./auth";
 export * from "./entitlements";
 export * from "./client";
 export * from "./mock-portal";
+export * from "./worker";

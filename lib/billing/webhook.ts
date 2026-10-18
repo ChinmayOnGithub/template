@@ -100,9 +100,12 @@ export async function processBillingWebhook(
   }
 
   // 4. Dispatch business events with transactional persistence
-  const subData = parsed.payload?.subscription;
-  const subId = subData?.id;
-  const planId = subData?.plan_id;
+  const subData = parsed.payload?.subscription as Record<string, unknown> | undefined;
+  const subEntity = (subData?.entity || subData) as
+    | { id?: string; plan_id?: string; status?: string }
+    | undefined;
+  const subId = subEntity?.id;
+  const planId = subEntity?.plan_id;
 
   if (isDatabaseConfigured()) {
     try {
