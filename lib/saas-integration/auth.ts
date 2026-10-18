@@ -29,10 +29,7 @@ export function generatePortalSignature(
   secret: string,
   timestamp: number = Math.floor(Date.now() / 1000),
 ): string {
-  const digest = crypto
-    .createHmac("sha256", secret)
-    .update(`${timestamp}.${payload}`)
-    .digest("hex");
+  const digest = crypto.createHmac("sha256", secret).update(`${timestamp}.${payload}`).digest("hex");
   return `t=${timestamp},v1=${digest}`;
 }
 
