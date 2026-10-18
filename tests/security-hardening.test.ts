@@ -5,33 +5,29 @@
  */
 
 import crypto from "node:crypto";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { createBillingAdapter, MockBillingAdapter } from "../lib/billing/adapter";
+import { beforeEach, describe, expect, it } from "vitest";
+import {
+  assertBillingProviderConfigured,
+  MockBillingAdapter,
+} from "../lib/billing/adapter";
 import {
   clearReplayCacheForTesting,
   generatePortalRsaSignature,
   verifyPortalSignature,
 } from "../lib/saas-integration/auth";
-import { AdminPortalClient } from "../lib/saas-integration/client";
-
-const originalBillingProvider = process.env.BILLING_PROVIDER;
-
-afterEach(() => {
-  vi.unstubAllEnvs();
-  if (originalBillingProvider === undefined) delete process.env.BILLING_PROVIDER;
-  else process.env.BILLING_PROVIDER = originalBillingProvider;
-  clearReplayCacheForTesting();
-});
+import { validatePortalBaseUrl } from "../lib/saas-integration/client";
 
 describe("production security configuration", () => {
-  it("refuses to silently select a mock billing provider in production", () => {
-    vi.stubEnv("NODE_ENV", "production");
-    delete process.env.BILLING_PROVIDER;
-    expect(() => createBillingAdapter()).toThrow(/must be explicitly configured/);
+  it("refuses to select a mock billing provider in production", () => {
+    expect(() => assertBillingProviderConfigured("production", "mock")).toThrow(
+      /must be explicitly configured/,
+    );
+    expect(() => assertBillingProviderConfigured("production", undefined)).toThrow(
+      /must be explicitly configured/,
+    );
   });
 
-  it("does not accept the mock webhook signature in production", () => {
-    vi.stubEnv("NODE_ENV", "production");
+  it("does not accept mock webhook signatures", () => {
     const adapter = new MockBillingAdapter();
     expect(adapter.verifyWebhookSignature("{}", "valid_test_signature", "configured-secret")).toBe(
       false,
@@ -39,19 +35,18 @@ describe("production security configuration", () => {
   });
 
   it("requires HTTPS for the Admin Portal client in production", () => {
-    vi.stubEnv("NODE_ENV", "production");
-    expect(
-      () =>
-        new AdminPortalClient({
-          baseUrl: "http://portal.example.com",
-          clientId: "test-client",
-          clientSecret: "test-secret",
-        }),
-    ).toThrow(/requires HTTPS/);
+    expect(() => validatePortalBaseUrl("http://portal.example.com", "production")).toThrow(
+      /requires HTTPS/,
+    );
+    expect(validatePortalBaseUrl("http://localhost:4000", "test").hostname).toBe("localhost");
   });
 });
 
 describe("asymmetric portal signatures", () => {
+  beforeEach(() => {
+    clearReplayCacheForTesting();
+  });
+
   it("verifies RSA-SHA256 signatures and rejects modified payloads", () => {
     const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
       modulusLength: 2048,
